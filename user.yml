@@ -7,7 +7,6 @@
     - { role: common, add_sudoers: true, user1: ambari, sudoer: true, adgroup: "", adnetbios: "" }
     - { role: common, add_sudoers: true, user1: root, sudoer: false, adgroup: "", adnetbios: "" }
     - { role: common, add_sudoers: true, user1: "{{hadoop_admin}}", sudoer: true, adgroup: "{{hadoop_group}}" }
-    - { role: common, yum: true, yum_install: true }
     - { role: common, add_sshkey: true, user1: ambari }  
     - { role: common, add_sshkey1: true, user1: root, passwd1: '{{passwd2}}', when: cloud=='onprem' } 
     - { role: common, add_sshkey2: true, user1: '{{hadoop_admin}}', passwd1: '{{passwd3}}' }
