@@ -1,0 +1,36 @@
+---
+
+# move log
+hadoop1log_path: '/hadoop/1/log/' 
+link_file:
+old_path:
+new_path:
+
+network_list:
+  - { server: "{{hostvars[groups['master'][0]].inventory_hostname.split('.')[0]}}", node_yum: master.yum }
+  - { server: "{{hostvars[groups['worker1'][0]].inventory_hostname.split('.')[0]}}", node_yum: worker1.yum }
+  - { server: "{{hostvars[groups['worker2'][0]].inventory_hostname.split('.')[0]}}", node_yum: worker2.yum }
+    
+# setup_repository
+repo_os_family: "centos{{ ansible_distribution_major_version }}"
+baseurl_os_family: "redhat{{ ansible_distribution_major_version }}"
+
+hdp_main_repo_url: "{{ repo_base_url }}/HDP/{{ repo_os_family }}/{{ hdp_major_version }}.x/updates/{{ hdp_version }}"
+hdf_main_repo_url: "{{ repo_base_url }}/HDF/{{ repo_os_family }}/{{ hdf_major_version }}.x/updates/{{ hdf_version }}"
+hdpsearch_main_repo_url: "{{ repo_base_url }}/HDP-SOLR-{{ hdpsearch_version }}-{{ hdpsearch_build_number }}/repos/{{ repo_os_family }}"
+main_os_target: "operating_systems/{{ baseurl_os_family }}"
+
+gpl_repo_url: "{{ repo_base_url }}/HDP-GPL/{{ repo_os_family }}/{{ hdp_major_version }}.x/updates/{{ hdp_version }}"
+
+utils_repo_url: "{{ repo_base_url }}/HDP-UTILS-{{ utils_version }}/repos/{{ repo_os_family }}"
+utils_os_target: "operating_systems/{{ baseurl_os_family }}/repositories/HDP-UTILS-{{ utils_version }}"
+
+# blueprint
+clustername: "hadoop{{env}}"
+hadoop_version: 3.1.4.0-315
+reponame1: HDP-3.1.4.0
+reponame2: HDP-UTILS
+stack_version: 3.1
+search_nodemaster1: "{{hostvars[groups['master'][0]].inventory_hostname}}"
+search_nodeworker11: "{{hostvars[groups['worker1'][0]].inventory_hostname}}"
+search_nodeworker21: "{{hostvars[groups['worker2'][0]].inventory_hostname}}"

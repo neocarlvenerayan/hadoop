@@ -1,0 +1,21 @@
+---
+
+- name: Create postgres db
+  postgresql_db:
+    name: "{{ database_options.ambari_db_name }}"
+    conn_limit: "200"
+  when: create_db|default(False)==True 
+  
+- name: Drop postgres db
+  postgresql_db:
+    name: "{{ database_options.ambari_db_name }}"
+    maintenance_db: "{{ database_options.ambari_db_name }}"
+    login_host: "{{ database_options.external_hostname|default(ansible_fqdn,true) }}"
+    port: "{{ postgres_port }}"
+    state: absent
+    login_user: "{{ database_options.ambari_db_username }}"
+    login_password: "{{ database_options.ambari_db_password }}"    
+    ssl_mode: disable
+  when: drop_db|default(False)==True 
+
+  

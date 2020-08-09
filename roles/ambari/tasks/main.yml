@@ -1,0 +1,64 @@
+---
+  
+- include_tasks: ambari_agent_run.yml
+  when: ambari_agent_run|default(False)==True
+
+- include_tasks: ambari_agent_start.yml
+  when: ambari_agent_start|default(False)==True     
+
+- include_tasks: ambari_agent_stop.yml
+  when: ambari_agent_stop|default(False)==True     
+  
+- include_tasks: ambari_server_run.yml
+  when: ambari_server_run|default(False)==True     
+  
+- include_tasks: yum_master.yml
+  when: yum_master|default(False)==True     
+  
+- include_tasks: ojdbc.yml
+  when: ojdbc|default(False)==True     
+
+- include_tasks: ambari_agent_restart.yml
+  when: ambari_agent_restart|default(False)==True     
+  
+- include_tasks: ambari_setup_repository.yml # not use ?
+  when: ambari_setup_repository|default(False)==True
+  
+- include_tasks: ambari_setup_postgres.yml
+  when: ambari_setup_postgres|default(False)==True
+
+- include_tasks: ambari_blueprint_worker1.yml
+  when: ambari_blueprint_worker1|default(False)==True
+
+- include_tasks: ambari_blueprint_worker2.yml
+  when: ambari_blueprint_worker2|default(False)==True
+
+- include_tasks: ambari_blueprint_mastermember.yml
+  when: ambari_blueprint_mastermember|default(False)==True
+    
+- include_tasks: ambari_blueprint.yml
+  when: ambari_blueprint|default(False)==True
+  
+- include_tasks: ambari_server_start.yml
+  when: ambari_server_start|default(False)==True
+
+- include_tasks: ambari_server_stop.yml
+  when: ambari_server_stop|default(False)==True
+   
+- include_tasks: reset_ambari_server.yml
+  when: reset_ambari_server|default(False)==True
+   
+- include_tasks: reset_ambari_agent.yml
+  when: reset_ambari_agent|default(False)==True
+   
+- include_tasks: reset_ambari_agent.yml
+  when: reset_ambari_agent|default(False)==True
+
+- include_tasks: move_log_server.yml
+  when: move_log_server|default(False)==True
+      
+- include_tasks: move_log_agent.yml
+  when: move_log_agent|default(False)==True
+      
+- include_tasks: ambari_setup_permission.yml
+  when: ambari_setup_permission|default(False)==True

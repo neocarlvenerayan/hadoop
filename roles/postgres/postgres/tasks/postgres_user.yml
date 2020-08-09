@@ -1,0 +1,18 @@
+---
+
+- name: Create user postgres
+  postgresql_user:
+    db: "{{ database_options.ambari_db_name }}"
+    name: "{{ database_options.ambari_db_username }}"
+    password: "{{ database_options.ambari_db_password }}"   
+    priv: ALL
+    expires: infinity
+  when: create_user|default(False)==True 
+    
+- name: Delete user postgres
+  postgresql_user:
+    db: "{{ database_options.ambari_db_name }}"
+    name: "{{ database_options.ambari_db_username }}"
+    priv: ALL
+    state: absent    
+  when: delete_user|default(False)==True    

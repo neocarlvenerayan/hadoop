@@ -1,0 +1,36 @@
+---
+
+- name: allow postgres db for connection
+  lineinfile:
+    path: /var/lib/pgsql/9.2/data/pg_hba.conf
+    line: "host    all             all             {{hadoop_subnet}}/24          trust"
+    backup: yes
+    insertafter: "host    all             all             127.0.0.1/32            ident"
+  notify: Restart postgres  
+  when: create_db_postgres|default(False)==True
+  ignore_errors: true
+
+- name: create db ambari/hive/ranger
+  shell: |
+     /bin/psql -c "create database {{database_options.ambari_db_name}};" 
+     /bin/psql -c "create database {{database_options.hive_db_name}};" 
+     /bin/psql -c "create database {{database_options.ranger_db_name}};" 
+  become_user: postgres 
+  ignore_errors: true    
+   
+- name: create user/pasword 
+  shell: |
+     /bin/psql -c "create user {{database_options.ambari_db_username}} with password '{{database_options.ambari_db_password}}';"
+     /bin/psql -c "create user {{database_options.hive_db_username}} with password   '{{database_options.hive_db_password}}';"
+     /bin/psql -c "create user {{database_options.ranger_db_username}} with password '{{database_options.ranger_db_password}}';"
+  when: create_db_postgres|default(False)==True
+  become_user: postgres
+  ignore_errors: true
+       
+- name: grant user to db
+  shell: |
+     /bin/psql -c 'grant all privileges on database "{{database_options.ambari_db_name}}" to {{database_options.ambari_db_username}};'
+     /bin/psql -c 'grant all privileges on database "{{database_options.hive_db_name}}" to   {{database_options.hive_db_username}};'
+     /bin/psql -c 'grant all privileges on database "{{database_options.ranger_db_name}}" to {{database_options.ranger_db_username}};'
+  become_user: postgres               
+  ignore_errors: true  

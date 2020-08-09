@@ -1,0 +1,51 @@
+---
+# not used
+- name: Create a directory if it does not exist {{artifacts_dest}}
+  file:
+    path: '{{artifacts_dest}}'
+    state: directory
+    mode: '{{mode_folder}}'  # folder
+
+- name: Downloading artifacts
+  get_url:
+    url: "{{item.url}}{{item.name}}"
+    dest: "{{artifacts_dest}}"
+    mode: "{{mode_file}}"  # file
+    timeout: 1200
+  with_items: "{{artifactslist}}"
+  register: x
+  retries: 3
+  delay: 10
+  until: x is not failed  
+  when: donotexec|default(False)==True    
+          
+- name: Unarchive file # unarchive does not set chown recursively
+  unarchive:
+    src: "{{ artifacts_dest }}{{item.name}}"
+    dest: "{{ artifacts_dest }}"
+    remote_src: yes    
+  with_items:
+    - "{{artifactslist}}"
+  register: x 
+  when: extract_repo|default(False)==True    
+  
+- name: Delete {{ item.name }}
+  file:
+    path: "{{ artifacts_dest }}{{ item.name }}"
+    state: absent
+  become: true
+  when: x is not failed
+  with_items:
+    - "{{artifactslist}}"
+  when: deleterepo|default(False)==True    
+
+# make sure you set variables properly  
+- name: Set permssion on the folder # set chown recursively or not
+  file:
+    path: "{{ artifacts_dest }}{{ item.folder }}"
+    owner: "{{owner_folder}}"  # folder
+    group: "{{group_folder}}" # folder
+    mode: "{{mode_folder}}" # folder
+    recurse: "{{recursive|default(True)==True}}"
+  when: x is not failed and item.folder is defined
+  with_items: "{{artifactslist}}"

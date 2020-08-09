@@ -1,0 +1,69 @@
+---
+        
+- block:
+    - name: Add the postgres repository (yum)
+      yum_repository:
+        name: "{{ postgres_repo_name }}"
+        description: "PostgreSQL"
+        baseurl: "{{ postgres_repo_url }}"
+        state: present
+        gpgcheck: yes
+        gpgkey: "{{ postgres_repo_key }}"
+      when: ansible_os_family|lower == "redhat"
+
+    - name: Add the postgres repository (apt)
+      apt_repository:
+        filename: pgdg
+        repo: "{{ item }}"
+        state: present
+        update_cache: yes
+      with_items:
+        - "deb {{ postgres_repo_url }} {{ ansible_lsb.codename }}-pgdg main"
+      when: ansible_os_family|lower == "debian"
+  when: database == "postgres" and database_options.add_repo and (postgres_repo_url|default(''))!=''
+
+- name: Install {{ database }} database packages
+  package:
+    name: "{{ item }}"
+    update_cache: yes
+    state: present
+  with_items: "{{ postgres_packages }}"
+
+- block:
+    - name: Initiate postgres
+      become: yes
+      shell: "{{ postgres_initdb_command }}"
+      args:
+        creates: "{{ postgres_hba_file }}"
+        warn: false
+
+    - name: Configure postgres to listen on all interfaces
+      lineinfile:
+        path: "{{ postgres_config_file }}"
+        line: "listen_addresses = '*'"
+        regexp: '^#?listen_addresses\s+='
+        state: present
+      notify: Restart postgres
+
+    - name: Set postgres max_connections
+      lineinfile:
+        path: "{{ postgres_config_file }}"
+        line: "max_connections = {{ max_connections }}"
+        regexp: '^#?max_connections\s+='
+        state: present
+      notify: Restart postgres
+  when: database == "postgres"
+
+
+- meta: flush_handlers
+
+- name: Make sure the {{ database }} service is started
+  service:
+    name: "{{ postgres_service_name }}"
+    state: started
+
+- name: Make sure the {{ database }} service is enabled
+  service:
+    name: "{{ postgres_service_name }}"
+    enabled: yes
+  ignore_errors: true
