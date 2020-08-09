@@ -3,7 +3,6 @@
   hosts: master
   any_errors_fatal: true
   become: true
-  
   roles:
     - { role: common, download_repo: true, when: cert_type=='multi' }       
      
