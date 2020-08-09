@@ -1,2 +1,2 @@
-# hadoop_server
+# hadoop
 ## configure ldap
