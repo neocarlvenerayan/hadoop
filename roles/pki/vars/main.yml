@@ -1,0 +1,30 @@
+---
+
+ambari_ssl_port: 8443
+
+# self
+
+# selfsigned keystore and truststore password
+cert_password: 123456 #"{{default_password}}" ???
+cert_ou: IT
+cert_o: "{{adnetbios|lower}}"
+cert_l: etobicoke
+cert_st: "ON"
+cert_c: CA
+
+jks_info:
+   - { alias: "{{hostvars[groups['master'][0]].inventory_hostname.split('.')[0]}}", dname: "CN={{hostvars[groups['master'][0]].inventory_hostname}}, OU={{cert_ou}}, O={{cert_o}}, L={{cert_l}}, ST={{cert_st}}, C={{cert_c}}", storepass: "{{cert_password}}" }
+   - { alias: "{{hostvars[groups['worker1'][0]].inventory_hostname.split('.')[0]}}", dname: "CN={{hostvars[groups['worker1'][0]].inventory_hostname}},OU={{cert_ou}},O={{cert_o}}, L={{cert_l}}, ST={{cert_st}}, C={{cert_c}}", storepass: "{{cert_password}}" }
+   - { alias: "{{hostvars[groups['worker2'][0]].inventory_hostname.split('.')[0]}}", dname: "CN={{hostvars[groups['worker2'][0]].inventory_hostname}},OU={{cert_ou}},O={{cert_o}}, L={{cert_l}}, ST={{cert_st}}, C={{cert_c}}", storepass: "{{cert_password}}" }
+   - { alias: "ranger", dname: "CN=ranger.{{ad_domain_lower}}, OU={{cert_ou}}, O={{cert_o}}, L={{cert_l}}, ST={{cert_st}}, C={{cert_c}}", storepass: "{{cert_password}}" }
+     
+# multi
+
+truststore_password:
+keystore_pasword:
+multi_alias: gateway-identity   
+
+# ca-cert
+ca_cert_pass: "{{cert_password}}"
+ca_cert_type: jks
+ca_cert_path: /var/lib/ambari-server/keys/cacerts.jks

@@ -1,0 +1,8 @@
+---
+
+- name: backup cacerts    
+  copy:
+    src: /etc/pki/ca-trust/extracted/java/cacerts
+    dest:  /etc/pki/ca-trust/extracted/java/cacerts.bk
+    remote_src: yes
+    mode: preserve

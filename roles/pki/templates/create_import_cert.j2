@@ -1,0 +1,3 @@
+/usr/sbin/ambari-server setup-security --security-option=setup-truststore --truststore-type={{ca_cert_type}} --truststore-path={{ca_cert_path}} --truststore-password={{ca_cert_pass}} -s -v
+sleep 1
+/usr/sbin/ambari-server setup-security --security-option=import-certificate --import-cert-path=/etc/pki/ca-trust/source/anchors/{{ad_cert_name.split('.')[0]}}.pem --import-cert-alias={{ad_cert_name.split('.')[0]}} -s -v

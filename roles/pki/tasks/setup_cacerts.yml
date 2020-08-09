@@ -1,0 +1,61 @@
+---
+
+# APPLY THIS WHEN AMBARI SERVER IS DOWN???
+
+- name: Copy {{ad_cert_name}} 
+  copy:
+    src: '{{artifacts_dest}}{{ad_cert_name}}'
+    dest: "/etc/pki/ca-trust/source/anchors/{{ad_cert_name.split('.')[0]}}.pem"
+    remote_src: yes
+    
+- name: update ca 
+  shell: |
+        update-ca-trust force-enable
+        update-ca-trust extract 
+        update-ca-trust check
+          
+- name: import cert 
+  shell: |
+        /usr/bin/keytool -import -file /etc/pki/ca-trust/source/anchors/{{ad_cert_name.split('.')[0]}}.pem \
+        -alias ambari-server -keystore ambari-server-truststore -storepass {{ca_cert_pass}} -v -noprompt
+      
+- meta: end_play # not working below ONLY MANUAL CLI WORKS ################# ???
+
+- name: create create import cert
+  template:
+    src: create_import_cert.j2
+    dest: /tmp/create_import_cert.sh
+  become_user: root
+
+- name: exec create import cert 
+  shell: |
+         chmod u+x /tmp/create_import_cert.sh
+         #/tmp/create_import_cert.sh # not working too
+  become_user: root
+   
+- name: Restart ambari-server
+  service:
+    name: ambari-server
+    state: restarted
+
+- name: Wait for Ambari Server to start listening on port 8080
+  wait_for:
+    port: 8080
+    host: 0.0.0.0
+    delay: 1    
+ 
+- name: extract jce policy
+  shell: unzip -o -j -q {{artifacts_dest}}jce_policy-8.zip -d {{postgres_java_rootfolder}}{{postgres_java_folder}}
+  become_user: root
+  
+- name: Restart ambari-server
+  service:
+    name: ambari-server
+    state: restarted
+
+- name: Wait for Ambari Server to start listening on port 8080
+  wait_for:
+    port: 8080
+    host: 0.0.0.0
+    delay: 1    
+  

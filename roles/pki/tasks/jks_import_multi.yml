@@ -1,0 +1,51 @@
+---
+
+- include_tasks: backup_cacerts.yml
+
+- name: Create server.pem 
+  shell: |
+        /usr/bin/cp {{mcert_file}} server.jks
+        /usr/bin/keytool -importkeystore -srckeystore server.jks -srcstorepass "{{keystore_pasword}}" \
+        -srckeypass "{{keystore_pasword}}" -destkeystore server.p12 -deststoretype PKCS12 -srcalias {{multi_alias}} \
+        -deststorepass "{{keystore_pasword}}" -destkeypass "{{keystore_pasword}}"
+        /usr/bin/openssl pkcs12 -in server.p12 -passin pass:{{keystore_pasword}}  -nokeys -out server.pem
+        /usr/bin/openssl pkcs12 -in server.p12 -passin pass:{{keystore_pasword}} -passout pass:{{keystore_pasword}} -nocerts -out server.keytemp
+        /usr/bin/openssl rsa -in server.keytemp -passin pass:{{keystore_pasword}} -out server.key
+        rm -f server.p12 server.keytemp
+  args:
+    chdir: "{{main_pki_folder}}"    
+  ignore_errors: true    
+
+               
+- name: Scp certs to server
+  shell: |            
+        ssh {{item}} "mkdir -p /etc/security/pki"
+        ssh {{item}} "chmod 755 /etc/security/pki"      
+        scp server.* {{item}}:/etc/security/pki/
+  args:
+    chdir: "{{main_pki_folder}}"
+  with_items:
+     - "{{ groups['master'] }}"
+     - "{{ groups['worker1'] }}"
+     - "{{ groups['worker2'] }}"
+     - "{{ groups['master-member'] }}"
+
+- name: Copy root certs
+  copy:
+    src: "{{item}}"
+    dest: "{{main_pki_folder}}"
+  with_items: 
+     - root1.cer
+     - root2.cer    
+
+- name: Import certs multi  # import keystore too?!?
+  shell: |
+       /usr/bin/keytool -importcert -alias root1 -file root1.cer -keystore /etc/pki/ca-trust/extracted/java/cacerts -storepass {{truststore_password}} -noprompt
+       /usr/bin/keytool -importcert -alias root2 -file root2.cer -keystore /etc/pki/ca-trust/extracted/java/cacerts -storepass {{truststore_password}} -noprompt
+       /usr/bin/keytool -importcert -alias {{cluster_name}} -file server.pem -keystore /etc/pki/ca-trust/extracted/java/cacerts -storepass {{truststore_password}} -noprompt
+  args:
+    chdir: "{{main_pki_folder}}"
+  ignore_errors: true    
+  
+# copy trustore is on the next task 'run_ambari_ssl'
+  
