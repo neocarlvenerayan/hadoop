@@ -1,0 +1,19 @@
+- name: Install Ambari Server Master
+  hosts: master 
+  become: true
+  any_errors_fatal: True
+  vars:
+     rhel_7:
+        - ambari-server
+  roles:
+    - { role: config, yum: true, yum_install: true }
+
+- name: Install Ambari agent
+  hosts: master-worker 
+  become: true
+  any_errors_fatal: True
+  vars:
+     rhel_7:
+        - ambari-agent
+  roles:
+    - { role: config, yum: true, yum_install: true, flushhandlers: true }
