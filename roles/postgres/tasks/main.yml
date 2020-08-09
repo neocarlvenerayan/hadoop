@@ -1,0 +1,19 @@
+---
+
+- include_tasks: install_postgres.yml
+  when: install_postgres|default(False)==True
+  
+- include_tasks: postgres_user.yml
+  when: postgres_user|default(False)==True
+  
+- include_tasks: postgres_db.yml
+  when: postgres_db|default(False)==True
+
+- include_tasks: create_postgres_db.yml
+  when: create_postgres_db|default(False)==True
+
+- include_tasks: reset_postgres.yml
+  when: reset_postgres|default(False)==True
+  
+  
+  

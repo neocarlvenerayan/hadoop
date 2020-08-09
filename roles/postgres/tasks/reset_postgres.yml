@@ -1,0 +1,13 @@
+---
+
+- name: drop ambari hive ranger
+  shell: |
+     /bin/psql -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '{{database_options.ambari_db_name}}';"
+     /bin/psql -c "DROP DATABASE {{database_options.ambari_db_name}};"
+     /bin/psql -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '{{database_options.hive_db_name}}';"
+     /bin/psql -c "DROP DATABASE {{database_options.hive_db_name}};"
+     /bin/psql -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '{{database_options.ranger_db_name}}';"
+     /bin/psql -c "DROP DATABASE {{database_options.ranger_db_name}};"
+  #ignore_errors: true
+  become_user: postgres
+  
