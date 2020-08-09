@@ -1,4 +1,3 @@
----
 
 - block:
     - name: yum packages
