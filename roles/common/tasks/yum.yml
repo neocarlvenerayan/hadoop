@@ -23,4 +23,6 @@
   with_items: 
     - "{{rhel_7}}"
   when: yum_install|default(False)==True
-  
+
+- meta: flush_handlers
+  when: flushhandlers|default(False)==True  
