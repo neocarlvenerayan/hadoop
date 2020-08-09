@@ -1,4 +1,3 @@
-
 - include_tasks: selinux.yml
   when: selinux|default(False)==True
   
@@ -25,27 +24,6 @@
   
 - include_tasks: create_inventory.yml
   when: create_inventory|default(False)==True       
-
-- include_tasks: create_partition.yml
-  when: create_partition|default(False)==True and inventory_hostname.split(".")[0] | lower == server.split(".")[0] | lower 
-
-- include_tasks: create_partition_nolog.yml
-  when: create_partition_nolog|default(False)==True and inventory_hostname.split(".")[0] | lower == server.split(".")[0] | lower 
-    
-- include_tasks: remove_partition_nolog.yml
-  when: remove_partition_nolog|default(False)==True and inventory_hostname.split(".")[0] | lower == server.split(".")[0] | lower 
-    
-- include_tasks: resize_logical.yml
-  when: resize_logical|default(False)==True and inventory_hostname.split(".")[0] | lower == server.split(".")[0] | lower
-
-- include_tasks: check_vglv_name.yml
-  when: check_vglv_name|default(False)==True    
-
-- include_tasks: check_partition.yml
-  when: check_partition|default(False)==True    
-
-- include_tasks: vgextend.yml
-  when: vgextend|default(False)==True                     
          
 - include_tasks: mv_inventory.yml
   when: mv_inventory|default(False)==True     
@@ -100,4 +78,3 @@
   
 - include_tasks: createrepo.yml
   when: createrepo|default(False)==True 
-  
