@@ -6,7 +6,7 @@
      rhel_7:
         - ambari-server
   roles:
-    - { role: config, yum: true, yum_install: true }
+    - { role: common, yum: true, yum_install: true }
 
 - name: Install Ambari agent
   hosts: master-worker 
@@ -16,4 +16,4 @@
      rhel_7:
         - ambari-agent
   roles:
-    - { role: config, yum: true, yum_install: true, flushhandlers: true }
+    - { role: common, yum: true, yum_install: true, flushhandlers: true }
