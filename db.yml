@@ -30,7 +30,7 @@
     artifactslist:
        - { url: '{{download_url}}', name: 'jdk-8u112-linux-x64.tar.gz', folder: '{{postgres_java_folder}}' }  
   roles:
-    - { role: config , download_repo: true }
+    - { role: common, download_repo: true }
      
 - name: Apply the ambari-server permission
   hosts: master
