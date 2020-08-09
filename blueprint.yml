@@ -1,0 +1,22 @@
+- name: Yum clean to fix zookeeper
+  hosts: master-worker
+  any_errors_fatal: true
+  become: true
+  roles:
+    - { role: common, yum: true, yum_clean_all: true } 
+
+- name: Apply the ambari-server blueprint
+  hosts: master
+  any_errors_fatal: true
+  become: true
+  roles:
+    - { role: ambari, ambari_blueprint: true, node_yum: master0.yum }
+     
+- name: Copy ambari yum 2 to all with priority
+  hosts: all
+  become: true
+  any_errors_fatal: True  
+  vars:
+    hostrepo: "{{groups['yum'][0]}}" 
+  roles:
+    - { role: common, copyrepo: true, ambarirepo: false, hdprepo: true, hdpcount: 2 }

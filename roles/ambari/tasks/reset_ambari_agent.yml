@@ -1,0 +1,18 @@
+---
+
+- include_tasks: ambari_agent_stop.yml  
+    
+- name: remove ambari-agent
+  shell: |
+     yum remove -y ambari-agent
+
+- name: delete all ambari-server folder
+  shell: |
+     rm -f /var/log/ambari-agent 
+     rm -fr /hadoop/1/log/ambari-agent
+     rm -fr /run/ambari-agent
+     rm -fr /etc/ambari-agent
+     rm -fr /var/lib/ambari-agent
+     rm -fr /var/lib/ambari-agent/bin/ambari-agent
+     rm -fr /usr/lib/ambari-agent
+  ignore_errors: true

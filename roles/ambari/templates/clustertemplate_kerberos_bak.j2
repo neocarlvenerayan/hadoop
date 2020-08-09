@@ -1,0 +1,32 @@
+{
+	"blueprint": "{{clustername}}",
+	"default_password": "{{ambari_admin_default_password}}",
+	"host_groups": [{
+		"name": "host_group_1",
+		"hosts": [{
+			"fqdn": "{{hostvars[groups['master'][0]].inventory_hostname}}"
+		}]
+	}, {
+		"name": "host_group_2",
+		"hosts": [{
+			"fqdn": "{{hostvars[groups['worker1'][0]].inventory_hostname}}"
+		}]
+	}, {
+		"name": "host_group_3",
+		"hosts": [{
+			"fqdn": "{{hostvars[groups['worker2'][0]].inventory_hostname}}"
+		}]
+	}],
+    "credentials": [{
+        "alias": "kdc.admin.credential",
+        "principal": "root/admin@{{ad_domain}}",
+        "key": "{{default_password}}",
+        "type": "TEMPORARY"
+    }],
+    "security": {
+        "type": "KERBEROS"
+    },	
+	"Clusters": {
+		"cluster_name": "{{clustername}}"
+	}
+}

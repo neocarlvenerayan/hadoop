@@ -1,0 +1,12 @@
+---
+  
+network_list:
+  - { server: "{{hostvars[groups['master'][0]].inventory_hostname.split('.')[0]}}", node_yum: master0.yum }
+  - { server: "{{hostvars[groups['master-member'][0]].inventory_hostname.split('.')[0]}}", node_yum: master-member0.yum }
+  - { server: "{{hostvars[groups['worker1'][0]].inventory_hostname.split('.')[0]}}", node_yum: worker10.yum }
+  - { server: "{{hostvars[groups['worker1'][1]].inventory_hostname.split('.')[0]}}", node_yum: worker11.yum }
+  - { server: "{{hostvars[groups['worker1'][2]].inventory_hostname.split('.')[0]}}", node_yum: worker12.yum }
+  - { server: "{{hostvars[groups['worker2'][0]].inventory_hostname.split('.')[0]}}", node_yum: worker20.yum }
+  - { server: "{{hostvars[groups['worker2'][1]].inventory_hostname.split('.')[0]}}", node_yum: worker21.yum }
+  - { server: "{{hostvars[groups['worker2'][2]].inventory_hostname.split('.')[0]}}", node_yum: worker22.yum }
+    

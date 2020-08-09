@@ -1,0 +1,7 @@
+---
+  
+network_list:
+  - { server: "{{hostvars[groups['master'][0]].inventory_hostname.split('.')[0]}}", node_yum: master.yum }
+  - { server: "{{hostvars[groups['worker1'][0]].inventory_hostname.split('.')[0]}}", node_yum: worker1.yum }
+  - { server: "{{hostvars[groups['worker2'][0]].inventory_hostname.split('.')[0]}}", node_yum: worker2.yum }
+    

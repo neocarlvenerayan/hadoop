@@ -1,0 +1,17 @@
+---
+
+- include_tasks: ambari_server_stop.yml  
+    
+- name: remove ambari-server
+  shell: |
+     yum remove -y ambari-server
+
+- name: delete all ambari-server folder
+  shell: |
+     rm -fr /run/ambari-server
+     rm -fr /etc/ambari-server
+     rm -fr /var/lib/ambari-server
+     rm -f /var/log/ambari-server 
+     rm -fr /hadoop/1/log/ambari-server
+     rm -fr /usr/lib/ambari-server
+  ignore_errors: true

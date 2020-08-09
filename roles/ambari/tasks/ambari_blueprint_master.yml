@@ -1,0 +1,20 @@
+---
+
+- include_vars: "{{env}}.yml"
+
+- name: Copy master yum
+  copy:
+    src: "{{env}}/{{item.node_yum}}"
+    dest: "/tmp/{{item.node_yum}}"
+  when: inventory_hostname.split('.')[0] == item.server
+  with_items: "{{network_list}}"
+      
+- name: execute yum
+  shell: | 
+        for i in `cat {{item.node_yum}}|awk '{print $1}'`; do yum install -y $i; done
+  args:
+    chdir: /tmp      
+  ignore_errors: true  
+  when: inventory_hostname.split('.')[0] == item.server
+  with_items: "{{network_list}}"
+  

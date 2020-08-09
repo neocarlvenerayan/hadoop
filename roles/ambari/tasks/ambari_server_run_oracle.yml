@@ -1,0 +1,51 @@
+---
+
+# for oracle
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+    
+- meta: flush_handlers
+
+- name: Run Ambari-server setup 
+  shell: |
+       ambari-server setup --databasehost=db.test014.org  --databasename=ambari  --databaseusername=ambari --oraclechema=PDDFPU2  --databasepassword=ambari --databaseport=5432 --database={{database}}  -s
+  notify: Restart ambari-server
+ 
+- meta: end_play
+############################  
+
+- name: Run Ambari-server setup jdbc driver
+  shell: "/usr/sbin/ambari-server setup --jdbc-db={{dbname}} --jdbc-driver={{oracle_jdk_var_lib}}"
+  notify: Restart ambari-server
+
+#- name: Run Ambari-server setup jdbc db 
+#  shell: "/usr/sbin/ambari-server setup --jdbc-db={{dbname}} --jdbc-driver={{oracle_jdk_usr_share}}"
+#  notify: Restart ambari-server
+
+- name: Run Ambari-server setup pam 1
+  shell: "/usr/sbin/ambari-server setup-pam --pam-config-file=/etc/pam.d/login --pam-auto-create-groups=true"
+  notify: Restart ambari-server
+
+- name: Run Ambari-server setup pam 2 
+  shell: "/usr/sbin/ambari-server setup-pam"
+  notify: Restart ambari-server
+  
+- name: Run Ambari-server setup-security 
+  shell: "/usr/sbin/ambari-server setup-security ????????????????????????"
+  notify: Restart ambari-server
+
+- meta: flush_handlers
+
+- name: Make sure the ambari-server service is started
+  service:
+    name: ambari-server
+    state: started
+
+- name: Make sure the ambari-server service is enabled
+  service:
+    name: ambari-server
+    enabled: yes
+  ignore_errors: true
+  

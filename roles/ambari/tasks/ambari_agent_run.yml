@@ -1,0 +1,43 @@
+---
+
+- include_tasks: ambari_agent_stop.yml   
+
+- name: reload systemd
+  systemd:
+    daemon_reload: yes
+   
+- name: Set the Ambari Server in the agent configuration
+  lineinfile:
+    path: /etc/ambari-agent/conf/ambari-agent.ini
+    regexp: "^hostname="
+    line: "hostname={{hostvars[groups['master'][0]].inventory_hostname}}"
+    state: present
+  
+- name: Set the Ambari Server in the agent configuration
+  lineinfile:
+    path: /etc/ambari-agent/conf/ambari-agent.ini
+    regexp: "^run_as_user="
+    line: "run_as_user=ambari"
+    state: present   
+    
+### The following is done on Python >= 2.7 to prevent issues with the latest Python libraries rejecting lower TLS protocols ???
+#- name: Configure the Ambari Agents to use TLS 1.2
+#  ini_file:
+#    path: /etc/ambari-agent/conf/ambari-agent.ini
+#    create: no
+#    section: "security"
+#    option: "force_https_protocol"
+#    value: "PROTOCOL_TLSv1_2"
+#    state: present
+#  when: (ansible_python_version is version_compare('2.7', '>=')) and ((ansible_os_family|lower == "redhat" and ansible_distribution_major_version|int >= 7))  
+
+- meta: flush_handlers
+
+- include_tasks: ambari_agent_start.yml
+
+- name: Make sure the ambari-agent service is enabled
+  service:
+    name: ambari-agent
+    enabled: yes
+  ignore_errors: true       
+   

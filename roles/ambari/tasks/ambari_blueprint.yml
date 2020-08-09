@@ -1,0 +1,29 @@
+---
+
+#- include_tasks: ambari_blueprint_master.yml
+
+- name: Copy blueprint
+  copy:
+    src: '{{env}}/blueprint.json'
+    dest: /tmp/blueprint.json    
+
+- name: create clustertemplate json
+  template:
+    src: '{{env}}/clustertemplate.j2'
+    dest: /tmp/clustertemplate.json
+    owner: root
+
+- name: execute blueprint json
+  shell: |
+       curl -H "X-Requested-By: ambari" -u admin:admin -X POST http://localhost:8080/api/v1/blueprints/{{clustername}} \
+       -d @blueprint.json 
+  args:
+    chdir: /tmp
+
+- name: execute clustertemplate json
+  shell: |
+       curl -u admin:admin -X POST http://localhost:8080/api/v1/clusters/{{clustername}} \
+       -d @clustertemplate.json
+  args:
+    chdir: /tmp
+           

@@ -1,0 +1,9 @@
+---
+
+- name: Move ambari logs server
+  shell: |
+         mv {{old_path}} {{new_path}}
+    
+- name: create server link
+  shell: |
+         ln -s {{new_path}}{{link_file}} {{old_path}}
