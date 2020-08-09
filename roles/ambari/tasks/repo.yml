@@ -1,0 +1,18 @@
+---
+
+- name: copy ambari.repo
+  template: 
+    src: ambari.repo
+    dest: /etc/yum.repos.d/ambari.repo
+    mode: 0644
+    
+- name: copy ambari-hdp-1.repo
+  template: 
+    src: ambari-hdp-1.repo
+    dest: /etc/yum.repos.d/ambari-hdp-1.repo  
+    mode: 0644
+
+#- name: restart httpd for repo server only 
+#  service:
+#    name: httpd
+#    state: restarted      

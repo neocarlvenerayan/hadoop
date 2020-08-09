@@ -1,0 +1,7 @@
+---
+
+- name: Make sure the ambari-server service is started
+  service:
+    name: ambari-server
+    state: started
+              

@@ -1,0 +1,32 @@
+
+- name: Download the cert
+  hosts: master
+  any_errors_fatal: true
+  become: true
+  
+  roles:
+    - { role: common, download_repo: true, when: cert_type=='multi' }       
+     
+- name: Apply the ambari-server PKI JKS
+  hosts: master
+  any_errors_fatal: true
+  become: true
+  roles:
+    - { role: pki, jks_enroll: true, when: cert_type=='self'  }
+    - { role: pki, jks_import: true, when: cert_type=='self'  }
+    - { role: pki, jks_import_multi: true, when: cert_type=='multi' }
+    - { role: pki, run_ambari_ssl: true }
+
+- name: Restart ambari-agents
+  hosts: master-worker
+  any_errors_fatal: true
+  become: true
+  roles:
+    - { role: ambari, ambari_agent_restart: true }
+
+- name: Restart ambari-server
+  hosts: master
+  any_errors_fatal: true
+  become: true
+  roles:
+    - { role: ambari, ambari_server_start: true }

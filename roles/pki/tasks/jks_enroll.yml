@@ -1,0 +1,27 @@
+---
+
+- name: Remove directory pki
+  file:
+   path: "{{main_pki_folder}}"
+   state: absent   
+
+- name: Creates directory pki
+  file:
+   path: "{{main_pki_folder}}"
+   state: directory   
+ 
+- name: Generate keystores
+  shell: |
+       /usr/bin/keytool -genkeypair -alias {{item.alias}}  -keyalg RSA -keysize 2048 -sigalg SHA256withRSA \
+       -dname "{{item.dname}}" -validity 1825 -keystore {{item.alias}}.jks -keypass {{item.storepass}} -storepass {{item.storepass}} -v
+  with_items: "{{jks_info}}"
+  args:
+    chdir: "{{main_pki_folder}}"
+    
+- name: Export keystores
+  shell: |
+        /usr/bin/keytool -export -alias {{item.alias}} -keystore {{item.alias}}.jks -rfc -file {{item.alias}}.cert -storepass {{item.storepass}} -noprompt
+  with_items: "{{jks_info}}"
+  args:
+    chdir: "{{main_pki_folder}}"
+      

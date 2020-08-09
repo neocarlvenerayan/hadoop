@@ -1,0 +1,4 @@
+---
+
+- name: set permission ambari-server
+  shell: 'chown ambari:root -R /var/run/ambari-server/ /run/ambari-server/'

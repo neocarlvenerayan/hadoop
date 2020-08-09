@@ -1,0 +1,91 @@
+---
+
+- include_tasks: backup_cacerts.yml
+    
+- name: Import certs
+  shell: |
+       /usr/bin/keytool -importcert -alias {{item.alias}} -file {{item.alias}}.cert -keystore /etc/pki/ca-trust/extracted/java/cacerts -storepass changeit -noprompt
+  with_items: "{{jks_info}}"
+  args:
+    chdir: "{{main_pki_folder}}"
+   
+   
+- name: Create server.pem node 0 (or master) for self or multi (signed)
+  shell: |
+        /usr/bin/cp {{jks_info[0].alias}}.jks server.jks
+        /usr/bin/keytool -importkeystore -srckeystore server.jks \
+        -srcstorepass "{{jks_info[0].storepass}}" -srckeypass "{{jks_info[0].storepass}}" -destkeystore server.p12 \
+        -deststoretype PKCS12 -srcalias {{jks_info[0].alias}} -deststorepass "{{jks_info[0].storepass}}" -destkeypass "{{jks_info[0].storepass}}"
+        /usr/bin/openssl pkcs12 -in server.p12 -passin pass:{{jks_info[0].storepass}}  -nokeys -out server.pem
+        /usr/bin/openssl pkcs12 -in server.p12 -passin pass:{{jks_info[0].storepass}} -passout pass:{{jks_info[0].storepass}} -nocerts -out server.keytemp
+        /usr/bin/openssl rsa -in server.keytemp -passin pass:{{jks_info[0].storepass}} -out server.key
+        rm -f server.p12 server.keytemp
+        mkdir -p /etc/security/pki
+        chmod 755 /etc/security/pki
+        mv server.* /etc/security/pki
+        rm -f server.*            
+  args:
+    chdir: "{{main_pki_folder}}"
+    
+       
+# self signed need to copy to each server and create ranger-plugin on each server?!?       
+- block:     
+       
+    - name: Create server.pem node 1
+      shell: |
+            /usr/bin/cp {{jks_info[1].alias}}.jks server.jks
+            /usr/bin/keytool -importkeystore -srckeystore server.jks \
+            -srcstorepass "{{jks_info[1].storepass}}" -srckeypass "{{jks_info[1].storepass}}" -destkeystore server.p12 \
+            -deststoretype PKCS12 -srcalias {{jks_info[1].alias}} -deststorepass "{{jks_info[1].storepass}}" -destkeypass "{{jks_info[1].storepass}}"
+            /usr/bin/openssl pkcs12 -in server.p12 -passin pass:{{jks_info[1].storepass}}  -nokeys -out server.pem
+            /usr/bin/openssl pkcs12 -in server.p12 -passin pass:{{jks_info[1].storepass}} -passout pass:{{jks_info[1].storepass}} -nocerts -out server.keytemp
+            /usr/bin/openssl rsa -in server.keytemp -passin pass:{{jks_info[1].storepass}} -out server.key
+            rm -f server.p12 server.keytemp
+            ssh {{hostvars[groups['worker1'][0]].inventory_hostname}} "mkdir -p /etc/security/pki"
+            ssh {{hostvars[groups['worker1'][0]].inventory_hostname}} "chmod 755 /etc/security/pki"
+            scp server.* {{hostvars[groups['worker1'][0]].inventory_hostname}}:/etc/security/pki/
+            rm -f server.*            
+      args:
+        chdir: "{{main_pki_folder}}"
+       
+    - name: Create server.pem node 2
+      shell: |
+            /usr/bin/cp {{jks_info[2].alias}}.jks server.jks
+            /usr/bin/keytool -importkeystore -srckeystore server.jks \
+            -srcstorepass "{{jks_info[2].storepass}}" -srckeypass "{{jks_info[2].storepass}}" -destkeystore server.p12 \
+            -deststoretype PKCS12 -srcalias {{jks_info[2].alias}} -deststorepass "{{jks_info[2].storepass}}" -destkeypass "{{jks_info[2].storepass}}"
+            /usr/bin/openssl pkcs12 -in server.p12 -passin pass:{{jks_info[2].storepass}}  -nokeys -out server.pem
+            /usr/bin/openssl pkcs12 -in server.p12 -passin pass:{{jks_info[2].storepass}} -passout pass:{{jks_info[2].storepass}} -nocerts -out server.keytemp
+            /usr/bin/openssl rsa -in server.keytemp -passin pass:{{jks_info[2].storepass}} -out server.key
+            rm -f server.p12 server.keytemp
+            ssh {{hostvars[groups['worker2'][0]].inventory_hostname}} "mkdir -p /etc/security/pki"
+            ssh {{hostvars[groups['worker2'][0]].inventory_hostname}} "chmod 755 /etc/security/pki"
+            scp server.* {{hostvars[groups['worker2'][0]].inventory_hostname}}:/etc/security/pki/
+            rm -f server.*            
+      args:
+        chdir: "{{main_pki_folder}}"
+
+    - name: Create server.pem ranger
+      shell: |
+            /usr/bin/cp {{jks_info[3].alias}}.jks server.jks
+            /usr/bin/keytool -importkeystore -srckeystore server.jks \
+            -srcstorepass "{{jks_info[3].storepass}}" -srckeypass "{{jks_info[3].storepass}}" -destkeystore server.p12 \
+            -deststoretype PKCS12 -srcalias {{jks_info[3].alias}} -deststorepass "{{jks_info[3].storepass}}" -destkeypass "{{jks_info[3].storepass}}"
+            /usr/bin/openssl pkcs12 -in server.p12 -passin pass:{{jks_info[3].storepass}}  -nokeys -out server.pem
+            /usr/bin/openssl pkcs12 -in server.p12 -passin pass:{{jks_info[3].storepass}} -passout pass:{{jks_info[3].storepass}} -nocerts -out server.keytemp
+            /usr/bin/openssl rsa -in server.keytemp -passin pass:{{jks_info[3].storepass}} -out server.key
+            rm -f server.p12 server.keytemp
+            mv server.jks ranger-plugin.jks
+            mv server.pem ranger-plugin.pem
+            mv server.key ranger-plugin.key
+            cp -p ranger-plugin.* /etc/security/pki/
+            scp ranger-plugin.* {{hostvars[groups['worker1'][0]].inventory_hostname}}:/etc/security/pki/
+            scp ranger-plugin.* {{hostvars[groups['worker2'][0]].inventory_hostname}}:/etc/security/pki/
+            rm -f server.*
+      args:
+        chdir: "{{main_pki_folder}}"
+        
+  when: cert_type=='self'
+  
+
+# copy trustore is on the next task 'run_ambari_ssl'  

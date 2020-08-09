@@ -1,0 +1,20 @@
+---
+
+- include_tasks: ../../ambari/tasks/ambari_server_stop.yml  
+   
+- name: Copy cacerts to trustore
+  copy:
+    src: /etc/pki/ca-trust/extracted/java/cacerts
+    dest: /etc/ambari-server/conf/truststore.jks 
+    
+   
+- name: Run Ambari-server setup-security setup-https (no -s)
+  shell: |       
+       /usr/sbin/ambari-server setup-security --security-option=setup-https --api-ssl=true --api-ssl-port={{ambari_ssl_port}} \
+       --import-cert-path=/etc/security/pki/server.pem --import-key-path=/etc/security/pki/server.key --pem-password={{cert_password}}
+       
+- name: Run Ambari-server setup-security setup-truststore (with -s)
+  shell: |       
+       /usr/sbin/ambari-server setup-security --security-option=setup-truststore --truststore-type=jks \
+       --truststore-path=/etc/ambari-server/conf/truststore.jks --truststore-password=changeit -s
+       

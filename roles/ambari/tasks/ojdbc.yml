@@ -1,0 +1,20 @@
+---
+
+# NOT USED
+
+- name: Create a directory if it does not exist {{artifacts_dest}}
+  file:
+    path: '{{artifacts_dest}}'
+    state: directory
+    owner: '{{owner_folder}}'
+    group: '{{group_folder}}'
+    mode: '{{mode_folder}}'
+
+- name: copy {{artifacts}} on {{artifacts_dest}}
+  copy: 
+    src: "{{artifacts}}"
+    dest: "{{artifacts_dest}}{{artifacts}}"
+    owner: '{{owner_file}}'
+    group: '{{owner_file}}'
+    mode: '{{mode_file}}'
+  become: true   

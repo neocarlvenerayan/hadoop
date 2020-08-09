@@ -1,0 +1,20 @@
+---
+
+- include_tasks: ../../ambari/tasks/ambari_server_stop.yml  
+    
+- name: restore cacerts and delete all ambari-server folder
+  shell: |
+     cp -pf /etc/pki/ca-trust/extracted/java/cacerts.bk /etc/pki/ca-trust/extracted/java/cacerts   
+  ignore_errors: true  
+     
+- name: delete /etc/security/pki/
+  shell: |            
+        ssh {{item}} "rm -fr /etc/security/pki/"
+  with_items:
+     - "{{ groups['master'] }}"
+     - "{{ groups['worker1'] }}"
+     - "{{ groups['worker2'] }}"
+     - "{{ groups['master-member'] }}"    
+  ignore_errors: true 
+     
+     

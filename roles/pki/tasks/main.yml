@@ -1,0 +1,20 @@
+---
+
+- include_tasks: jks_enroll.yml
+  when: jks_enroll|default(False)==True
+  
+- include_tasks: jks_import.yml
+  when: jks_import|default(False)==True
+
+- include_tasks: jks_import_multi.yml
+  when: jks_import_multi|default(False)==True
+
+- include_tasks: run_ambari_ssl.yml
+  when: run_ambari_ssl|default(False)==True
+
+- include_tasks: reset_pki.yml
+  when: reset_pki|default(False)==True
+    
+- include_tasks: setup_cacerts.yml
+  when: setup_cacerts|default(False)==True                    
+                  

@@ -1,0 +1,17 @@
+---
+
+- include_tasks: ambari_server_stop.yml   
+
+- include_tasks: hadoop1log_path.yml
+                       
+- set_fact: link_file=ambari-server
+- set_fact: 
+    old_path: "{{base_log_dir}}/{{link_file}}"
+    new_path: "{{hadoop1log_path}}"
+                          
+- include_tasks: move_log.yml
+  
+- name: reload systemd
+  systemd:
+    daemon_reload: yes
+       
