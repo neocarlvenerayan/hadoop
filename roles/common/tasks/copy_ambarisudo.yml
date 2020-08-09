@@ -1,0 +1,79 @@
+---
+
+- name: search and replace sudo
+  shell: |
+      sed -i 's/ambari ALL=(ALL) NOPASSWD: ALL//g' /etc/sudoers
+
+- name: Remove ambari to sudoers
+  lineinfile:
+    dest:         /etc/sudoers
+    state:        absent
+    regexp:       'ambari '
+    validate:     'visudo -cf %s'     
+
+- name: Allow ambari default to sudoers
+  lineinfile:
+    dest:         /etc/sudoers
+    state:        present
+    regexp:       '^ambari ALL=(ALL) ALL'
+    line:         'ambari ALL=(ALL) ALL'
+    validate:     'visudo -cf %s'     
+
+- name: Allow ambari default to sudoers
+  lineinfile:
+    dest:         /etc/sudoers
+    state:        present
+    regexp:       '^Defaults exempt_group = ambari'
+    line:         'Defaults exempt_group = ambari'
+    validate:     'visudo -cf %s'     
+
+- name: Allow ambari default to sudoers
+  lineinfile:
+    dest:         /etc/sudoers
+    state:        present
+    regexp:       '^Defaults !env_reset,env_delete-=PATH'
+    line:         'Defaults !env_reset,env_delete-=PATH'
+    validate:     'visudo -cf %s'     
+
+- name: Allow ambari default to sudoers
+  lineinfile:
+    dest:         /etc/sudoers
+    state:        present
+    regexp:       '^Defaults: ambari !requiretty'
+    line:         'Defaults: ambari !requiretty'
+    validate:     'visudo -cf %s'     
+
+- name: Allow ambari default to sudoers
+  lineinfile:
+    dest:         /etc/sudoers
+    state:        present
+    regexp:       '^{{item}}'
+    line:         '{{item}}'
+    validate:     'visudo -cf %s'   
+  with_items:
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /bin/mkdir -p /etc/security/keytabs, /bin/ls /etc/security/keytabs, /bin/chmod * /etc/security/keytabs/*.keytab, /bin/chown * /etc/security/keytabs/*.keytab, /bin/chgrp * /etc/security/keytabs/*.keytab, /bin/rm -f /etc/security/keytabs/*.keytab, /bin/cp -p -f /var/lib/ambari-server/data/tmp/* /etc/security/keytabs/*.keytab'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /bin/mkdir -p /var/lib/ambari-server/data/tmp, /bin/chmod * /var/lib/ambari-server/data/tmp, /bin/chown * /var/lib/ambari-server/data/tmp, /bin/chgrp * /var/lib/ambari-server/data/tmp, /bin/rm -rf /var/lib/ambari-server/data/tmp/*, /bin/cp -f /tmp/* /var/lib/ambari-server/data/tmp/*, /usr/bin/test * *, /bin/stat -c %u %g %a /var/lib/ambari-server/data/tmp/*'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /usr/sbin/ambari-agent *, /usr/sbin/ambari-server *, /usr/bin/hdfs *, /usr/bin/hadoop *, /usr/bin/ambari-python-wrap *'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /bin/su hdfs *,/bin/su ambari-qa *,/bin/su ranger *,/bin/su zookeeper *,/bin/su knox *,/bin/su falcon *,/bin/su ams *, /bin/su flume *,/bin/su hbase *,/bin/su worker2 *,/bin/su accumulo *,/bin/su hive *,/bin/su hcat *,/bin/su worker1 *,/bin/su mapred *,/bin/su oozie *,/bin/su sqoop *,/bin/su storm *,/bin/su tez *,/bin/su atlas *,/bin/su yarn *,/bin/su yarn-ats *,/bin/su kms *,/bin/su activity_analyzer *,/bin/su livy *,/bin/su zeppelin *,/bin/su infra-solr *,/bin/su logsearch *, /usr/hdp/current/hadoop-hdfs-namenode/bin/hdfs *'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /usr/bin/yum,/usr/bin/zypper,/usr/bin/apt-get, /bin/mkdir, /usr/bin/test, /bin/ln, /bin/ls, /bin/chown, /bin/chmod, /bin/chgrp, /bin/cp, /usr/sbin/setenforce, /usr/bin/test, /usr/bin/stat, /bin/mv, /bin/sed, /bin/rm, /bin/kill, /bin/readlink, /usr/bin/pgrep, /bin/cat, /usr/bin/unzip, /bin/tar, /usr/bin/tee, /bin/touch, /usr/bin/mysql, /sbin/service mysqld *, /usr/bin/dpkg *, /bin/rpm *, /usr/sbin/hst *'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /usr/bin/hdp-select, /usr/bin/conf-select, /usr/hdp/current/hadoop-client/sbin/hadoop-daemon.sh, /usr/lib/hadoop/bin/hadoop-daemon.sh, /usr/lib/hadoop/sbin/hadoop-daemon.sh, /usr/bin/ambari-python-wrap *'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /usr/sbin/groupadd, /usr/sbin/groupmod, /usr/sbin/useradd, /usr/sbin/usermod'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /usr/bin/klist -k /etc/security/keytabs/*'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /usr/bin/python2.7 /var/lib/ambari-agent/data/tmp/validateKnoxStatus.py *, /usr/hdp/current/knox-server/bin/knoxcli.sh'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /usr/hdp/*/ranger-usersync/setup.sh, /usr/bin/ranger-usersync-stop, /usr/bin/ranger-usersync-start, /usr/hdp/*/ranger-admin/setup.sh *, /usr/hdp/*/ranger-knox-plugin/disable-knox-plugin.sh *, /usr/hdp/*/ranger-storm-plugin/disable-storm-plugin.sh *, /usr/hdp/*/ranger-hbase-plugin/disable-hbase-plugin.sh *, /usr/hdp/*/ranger-hdfs-plugin/disable-hdfs-plugin.sh *, /usr/hdp/current/ranger-admin/ranger_credential_helper.py, /usr/hdp/current/ranger-kms/ranger_credential_helper.py, /usr/hdp/*/ranger-*/ranger_credential_helper.py, /usr/bin/python2.7 /var/lib/ambari-agent/cache/stacks/HDP/3.0/services/RANGER/package/scripts/ranger_admin.py *'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /usr/lib/ambari-infra-solr/bin/solr *, /usr/lib/ambari-logsearch-logfeeder/run.sh *, /usr/sbin/ambari-metrics-grafana *, /usr/lib/ambari-infra-solr-client/solrCloudCli.sh *'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /usr/bin/python2.7 /usr/lib/ambari-agent/lib/resource_management/libraries/script/script.py *, /usr/bin/python2.7 /usr/lib/ambari-agent/lib/resource_management/libraries/functions/stack_select.py *, /usr/bin/python2.7 /var/lib/ambari-agent/cache/stack-hooks/after-INSTALL/scripts/hook.py *, /usr/bin/python2.7 /usr/bin/python2.7 /var/lib/ambari-agent/cache/stack-hooks/after-INSTALL/scripts/shared_initialization.py *, /usr/bin/python2.7 /var/lib/ambari-agent/cache/stacks/HDP/3.0/services/RANGER/package/scripts/setup_ranger_xml.py *, /usr/bin/python2.7 /usr/lib/ambari-agent/lib/resource_management/core/environment.py *, /usr/bin/python2.7 /usr/lib/ambari-agent/lib/resource_management/core/providers/system.py *, /usr/bin/python2.7 /usr/lib/ambari-agent/lib/resource_management/core/shell.py *, /usr/jdk64/jdk1.8.0_112/bin/java * , /usr/hdp/current/ranger-admin/cred/lib/*, /usr/bin/python2.7 /usr/lib/ambari-agent/lib/resource_management/core/base.py *'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /var/lib/ambari-agent/tmp/changeUid.sh *, /var/lib/ambari-agent/tmp/changeUid.sh *, /usr/bin/python2.7 /etc/hadoop/conf/topology_script.py *'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /usr/hdp/3.1.4.0-315/hadoop/conf/hadoop-env.sh *, /usr/bin/python2.7 /var/lib/ambari-agent/cache/stacks/HDP/3.0/services/YARN/package/scripts/timelinereader.py *'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /usr/bin/python2.7 /var/lib/ambari-agent/cache/stacks/HDP/3.0/services/YARN/package/scripts/hbase_service.py *, /usr/bin/kinit *, /usr/hdp/3.1.4.0-315/hbase/bin/hbase *'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /usr/hdp/3.1.4.0-315/hadoop/conf/embedded-yarn-ats-hbase/hbase-env.sh *, /usr/hdp/3.1.4.0-315/hadoop/conf/embedded-yarn-ats-hbase/hbase_grant_permissions.sh *'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /var/lib/ambari-server/ambari-sudo.sh *, /var/lib/ambari-agent/ambari-sudo.sh *'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /usr/hdp/3.1.4.0-315/hadoop/conf/yarn-env.sh *, /usr/hdp/3.1.4.0-315/hadoop/conf/mapred-env.sh *'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /usr/hdp/3.1.4.0-315/hbase/bin/hbase-daemon.sh *, /usr/bin/hdp-select *'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /usr/bin/python2.7 /usr/sbin/ambari-server.py *, /usr/bin/python2.7 /usr/lib/ambari-server/lib/ambari_server/checkDatabase.py *, /usr/bin/python2.7 /usr/lib/ambari-server/lib/ambari_server/serverConfiguration.py *'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /var/lib/ambari-server/resources/stack-hooks/before-ANY/files/changeToSecureUid.sh *, /var/lib/ambari-agent/cache/stack-hooks/before-ANY/files/changeToSecureUid.sh *'
+     - 'ambari ALL=(ALL) NOPASSWD:SETENV: /usr/bin/python2.7/usr/hdp/3.1.4.0-315/ranger-hdfs-plugin/ranger_credential_helper.py *'
+
+#- name: add sudo
+#  shell: |
+#     echo 'ambari ALL=(ALL) NOPASSWD:SETENV: /bin/**, /sbin/**, /usr/**, /var/**, /run/**, /etc/**, /root/**, /srv/**, /sys/**, /tmp/**, /opt/**, /proc/**, /lib/**, /lib64/**, /home/**, /hadoop/**, /cgroups_test/**, /dev/**' >> /etc/sudoers

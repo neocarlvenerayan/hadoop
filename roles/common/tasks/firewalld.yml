@@ -1,0 +1,7 @@
+---
+
+# not use
+- name: disable firewalld
+  shell: |
+       systemctl disable firewalld
+       systemctl stop firewalld

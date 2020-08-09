@@ -1,0 +1,45 @@
+---
+
+- block:
+    - name: register bindings
+      stat: path=/etc/multipath/bindings
+      register: x
+    
+    - block: 
+        - file: path=temp44_006.log state=absent
+        
+        - name: Check bindings
+          shell: "cat /etc/multipath/bindings | tr -s '\n' '\n' | grep -v '#' > temp44_006.log || true" 
+         
+        - name: List the bindings 
+          shell: "tail -n 9 {{pre_check_tmp}}/temp43_007.log > temp44_006.log || true" 
+            
+        - name: Register the bindings    
+          shell: "cat temp44_006.log | awk 'NR=={{item}}{print $1}' || true"
+          register: w
+          with_sequence: count={{letters|length}}
+              
+        - name: Save the raw prefix mpath
+          set_fact: raw_prefix='mpath'
+          when: item.stdout|regex_search('mpath')
+          with_items: "{{w.results}}"
+          until: raw_prefix=='mpath'
+      when: x.stat.exists == true
+  when: include_mpath|default(False)==True 
+  
+- debug: var=raw_prefix  
+
+- block:
+    - file: path=temp44_005.log state=absent
+    - name: get raw disk prefix
+      shell: |
+             fdisk -l|grep 'Disk /dev/' 1> temp44_005.log
+             sed '/^$/d' temp44_005.log|awk 'NR==1 { print $2 }'|tr -d ':'|cut -b 6-7
+      register: x
+      
+    - set_fact: raw_prefix='{{x.stdout}}'          
+  when: raw_prefix == ""
+  
+- fail: 
+      msg: "raw_prefix cannot get the value!"
+  when: raw_prefix == ""        

@@ -1,0 +1,66 @@
+---
+
+- name: Delete id_rsa* on repo
+  shell: rm -f ./id_rsa*
+  ignore_errors: true 
+  delegate_to: localhost
+  run_once: true
+  
+- name: Delete authorized_keys*
+  shell: rm -f ~/authorized_keys.*
+  ignore_errors: true  
+  become_user: '{{user1}}'
+
+- name: Create .ssh folder if not exist on all
+  shell: "sudo su - '{{user1}}' -c '[ -d $PWD/.ssh ] && echo WARNING-FOLDER-ALREADY-EXIST||mkdir -p $PWD/.ssh && chmod 0700 ~/.ssh'" 
+
+- name: Generate ssh key of {{user1}} on {{groups['client']}}
+  shell: sudo su - {{user1}} -c '[ ! -f  ~/.ssh/id_rsa ] && ssh-keygen -t rsa -f ~/.ssh/id_rsa -q -P "" || mkdir -p ~/.ssh && chmod 0700 ~/.ssh'
+  when: inventory_hostname in groups['client']
+  
+- name: Fetch client public key to repo 
+  fetch: 
+    src: ~/.ssh/id_rsa.pub
+    dest: "./id_rsa.pub.{{inventory_hostname}}"
+    flat: yes
+  become_user: '{{user1}}'    
+  when: inventory_hostname in groups['client']           
+    
+- name: Compile public key to one file    
+  shell: cat ./id_rsa.pub.* 1>> ./id_rsa.pub.all
+  delegate_to: localhost # ansible
+  ignore_errors: true  
+    
+- name: Copy client public key to gateway 
+  copy:
+    src: './id_rsa.pub.all'
+    dest: '~/authorized_keys.all'
+    mode: 0600 
+  become_user: '{{user1}}'
+  when: inventory_hostname in groups['gateway']
+
+- name: Append client public key to authorized_keys ALL 
+  shell: |
+         cat ~/authorized_keys.all | while read line; do grep -q `echo $line|awk '{print $3}'` ~/.ssh/authorized_keys && echo ALREADY_ON_THE_AUTHORIZED_KEYS || echo $line  >> ~/.ssh/authorized_keys; done
+  become_user: '{{user1}}'
+  when: inventory_hostname in groups['gateway']  
+
+- name: Copy config to all
+  copy:
+    src: config
+    dest: ~/.ssh/config
+    mode: 0400   
+    force: no   
+  become_user: '{{user1}}'
+  
+- name: Delete id_rsa* on repo
+  shell: rm -f ./id_rsa*
+  ignore_errors: true 
+  delegate_to: localhost
+  run_once: true
+  
+- name: Delete authorized_keys*
+  shell: rm -f ~/authorized_keys.*
+  ignore_errors: true  
+  become_user: '{{user1}}'
+   

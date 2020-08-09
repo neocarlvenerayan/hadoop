@@ -1,0 +1,26 @@
+---
+
+- block:
+    - name: yum packages
+      shell: yum clean packages
+
+    - name: yum clean metadata
+      shell: yum clean metadata
+      
+    - name: yum clean dbcache
+      shell: yum clean dbcache
+
+    - name: yum clean all
+      shell: yum clean all
+  when: yum_clean_all|default(False)==True   
+
+- name: yum makecache
+  shell: yum makecache
+  when: yum_makecache|default(False)==True
+  
+- name: install Binaries for RHEL 7
+  yum: name={{ item }} state=present
+  with_items: 
+    - "{{rhel_7}}"
+  when: yum_install|default(False)==True
+  

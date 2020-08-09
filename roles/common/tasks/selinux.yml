@@ -1,0 +1,11 @@
+---
+
+- name: Disable SELinux
+  selinux: 
+      state: disabled
+            
+- name: Reboot Server
+  shell: reboot now
+  when: reboot|default(False)==True 
+  ignore_errors: true            
+  # can be change to reboot if ansible 2.7

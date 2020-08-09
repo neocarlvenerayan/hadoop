@@ -1,0 +1,10 @@
+---
+
+- name: delete ambari-hdp-1.repo
+  file: 
+     path: /etc/yum.repos.d/ambari-hdp-1.repo
+     force: yes
+     state: absent
+  retries: 3
+  delay: 3
+  become_user: root

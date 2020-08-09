@@ -1,0 +1,11 @@
+---
+
+- name: Add users | create users, shell, home dirs
+  user: name={{user1}} shell=/bin/bash createhome=yes comment='created with ansible'
+  register: x
+  
+- name: Password creation on user1
+  shell: echo {{passwd1}} | passwd --stdin {{user1}}
+  when: x.failed == false
+  #no_log: yes
+           

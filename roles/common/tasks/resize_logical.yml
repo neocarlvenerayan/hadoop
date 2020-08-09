@@ -1,0 +1,23 @@
+---
+
+- set_fact: pvlist='/dev/mapper/{{disk1}}{{partition}}'
+  when: disk1|regex_search('mpath') 
+
+- name: resize logical execution
+  lvol:
+    vg: "{{ vgname }}"
+    lv: "{{ lvname }}"
+    size: "{{ size }}"
+    resizefs: true
+  register: x
+  ignore_errors: true
+  become: true
+    
+- debug: 
+    msg:
+      - '***Error*** creation of LV {{vgname}}' 
+      - '{{x.msg}}' 
+  when: x is failed
+      
+- shell: echo '***Success*** resize logical to {{ size }}!'
+  when: x is not failed         

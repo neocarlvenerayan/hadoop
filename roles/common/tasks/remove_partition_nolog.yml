@@ -1,0 +1,122 @@
+---
+
+- set_fact: continue_x=true
+# disk_process=DPVLFM
+
+# u[M]ount 
+- block:
+    - name: unmount fs
+      mount:
+        path: '{{fsname}}'
+        state: "unmounted"
+      ignore_errors: true
+      register: x
+    - block:
+         - shell: |
+                  echo ***Error*** {{ fsname }} unmount! 
+                  echo '{{x.msg}}'
+         - set_fact: continue_x=false
+      when: x is failed    
+    - block:  
+         - name: Remove entry in fstab
+           lineinfile:
+             path: /etc/fstab
+             state: absent
+             regexp: '{{ lvname }}'  
+           register: y
+         - block:  
+             - shell: |
+                      echo ***Error*** remove fstab entry! 
+                      echo '{{y.msg}}'
+             - set_fact: continue_x=false         
+           when: y is failed
+      when: remove_fstab         
+    - shell: echo ***Warning*** fstab entry not remove! 
+      when: not(remove_fstab)           
+  when: disk_process|regex_search('M') and continue_x==true    
+  
+# remove [F]ilesystem  
+- block:  
+    - file: 
+         path: '{{fsname}}'
+         state: absent
+      register: x
+    - block: 
+         - shell: |
+                  echo  '***Error*** not remove FS!'
+                  echo '{{x.msg}}'
+         - set_fact: continue_x=false
+      when: x is failed
+  when: disk_process|regex_search('F') and continue_x==true      
+      
+# remove LV  
+- block:
+    - name: lv remove
+      lvol:
+        vg: "{{ vgname }}"
+        lv: "{{ lvname }}"
+        state: absent
+        force: "{{ force }}"
+      ignore_errors: true
+      register: x
+    - block:  
+         - shell: |
+                  echo '***Error*** LV remove --{{x.stdout}}!'  
+                  echo '{{x.msg}}'  
+         - set_fact: continue_x=false
+      when: x is failed  
+  when: disk_process|regex_search('L') and continue_x==true  
+
+# remove VG  
+- block:
+    - name: vg remove
+      lvg:
+        vg: "{{ vgname }}"
+        state: absent
+      ignore_errors: true
+      register: x  
+    - block:   
+         - shell: |
+                  echo '***Error*** remove VG {{ vgname }}!'  
+                  echo '{{x.msg}}' 
+         - set_fact: continue_x=false
+      when: x is failed  
+  when: disk_process|regex_search('V') and continue_x==true  
+  
+# remove PV
+- block:
+    - name: pvremove
+      shell: pvremove {{ pvlist }}
+      register: x
+      ignore_errors: true
+    - block:
+        - debug: 
+            msg:
+              - '***Error*** creation of PV {{pvlist}}' 
+              - '{{x.stderr}}' 
+        - set_fact: continue_x=false
+      when: x.rc!=0  
+  when: disk_process|regex_search('P') and continue_x==true      
+  
+# remove DEV
+- block:
+    - shell: 'ls /dev/{{pvname}}*' # for failsafe
+      register: x
+    - block:  
+         - shell: |
+                  echo '***Error*** other DEV found {{pvlist}}!' 
+                  echo '{{x.stdout}}' 
+                  echo '{{x.stderr}}' 
+         - meta: end_play
+      when: x.stdout is search('2') or x.stdout is search('3') or x.stdout is search('4')       
+    - name: Remove dev (for partition 1 only)
+      shell: (echo d; echo w) | fdisk /dev/{{ pvname }}
+      ignore_errors: true
+      register: x
+    - shell: |
+             echo '***Error*** remove DEV {{pvlist}}' 
+             echo '{{x.stderr}}' 
+             echo '{{x.stdout}}' 
+      when: x.rc!=0
+  when: disk_process|regex_search('D') and continue_x==true      
+  

@@ -1,0 +1,24 @@
+---
+
+# for root
+
+- include_vars: "{{env}}.yml"
+
+- name: Create .ssh folder if not exist TO ALL
+  shell: '[ -f ~/.ssh ] && echo .SSH-ALREADY-EXIST||mkdir -p ~/.ssh && chmod 0700 ~/.ssh'   
+    
+- name: Delete authorized_keys TO ALL
+  shell: '[ -f ~/.ssh/authorized_keys ] && rm -f ~/.ssh/authorized_keys || echo NOTHING TO DELETE!'  
+
+- name: Generate ssh key master - master-member
+  shell: '[ ! -f ~/.ssh/id_rsa ] && ssh-keygen -t rsa -f ~/.ssh/id_rsa -q -P "" || echo SSH KEYS EXIST!'
+  when: inventory_hostname in groups['master'] or inventory_hostname in groups['master-member'] 
+  
+- name: run sshpass on master - master-member
+  shell: |
+         /usr/bin/sshpass -p {{passwd1}} ssh-copy-id -o StrictHostKeyChecking=no {{item.server}}
+  with_items: "{{network_list2}}"       
+  when: inventory_hostname in groups['master'] or inventory_hostname in groups['master-member']  
+ 
+- name: copy config to all
+  shell: echo "Host *" > ~/.ssh/config;echo "   StrictHostKeyChecking no" >> ~/.ssh/config;echo "   UserKnownHostsFile=/dev/null" >> ~/.ssh/config;chmod 0400 ~/.ssh/config;   

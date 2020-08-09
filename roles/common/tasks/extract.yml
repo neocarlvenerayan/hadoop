@@ -1,0 +1,19 @@
+---
+
+- name: Extract {{ item }}
+  shell: "tar -xvzf {{ artifacts_dest }}{{ item }}"
+  args:
+     chdir: "{{ artifacts_dest }}" 
+  become: true
+  register: x 
+  with_items:
+    - "{{artifactslist}}"
+
+- name: Delete {{ item }}
+  file:
+    path: "{{ artifacts_dest }}{{ item }}"
+    state: absent
+  become: true
+  when: x is not failed and deleteartifact|default(False)==True
+  with_items:
+    - "{{artifactslist}}"

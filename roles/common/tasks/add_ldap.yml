@@ -1,0 +1,48 @@
+---
+
+- name: execute pbis-open
+  shell: "{{ artifacts_dest }}{{ item.name }}"
+  with_items: "{{artifactslist}}"
+  
+- name: enable chattr
+  shell: chattr -i /etc/resolv.conf
+  
+- name: modify resolv.conf search
+  lineinfile:
+    path: /etc/resolv.conf
+    regexp: "^search localdomain"
+    line: "search localdomain {{ad_domain|lower}}"
+    state: present    
+
+- name: remove current nameserver
+  lineinfile:
+    path: /etc/resolv.conf
+    regexp: "^nameserver"
+    state: absent
+
+- name: add new nameeserver
+  lineinfile:
+    path: /etc/resolv.conf
+    regexp: "^nameserver {{dns_name1}}"
+    line: "nameserver {{dns_name1}}"
+    state: present    
+  
+- name: enable chattr
+  shell: chattr +i /etc/resolv.conf
+    
+- name: Restart network
+  service:
+    name: network
+    state: restarted    
+    
+- name: join to domain
+  shell: '/opt/pbis/bin/domainjoin-cli join {{ad_domain}} {{ad_admin_user}} {{ad_admin_password}}'
+  register: x
+
+- name: reboot when needed
+  reboot:
+  when: x.stdout|regex_search('restart your system to ensure')  
+  
+- name: default to /bin/bash
+  shell: /opt/pbis/bin/config LoginShellTemplate /bin/bash 
+  

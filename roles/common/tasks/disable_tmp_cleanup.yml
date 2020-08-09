@@ -1,0 +1,35 @@
+---
+
+- name: Disable 10 days /tmp cleanup
+  lineinfile:
+    path: "{{tmp_default}}"
+    regexp: 'v /tmp 1777 root root 10d'
+    line: '#v /tmp 1777 root root 10d'
+  become: true
+
+- name: Disable 30 days /var/tmp cleanup
+  lineinfile:
+    path: "{{tmp_default}}"
+    regexp: 'v /var/tmp 1777 root root 30d'
+    line: '#v /var/tmp 1777 root root 30d'
+
+- name: Touch tgt_tmpfiles.conf
+  file:
+    path:  "{{tmp_file_path}}tgt_tmpfiles.conf"
+    state: touch        
+        
+- name: Create tgt_tmpfiles.conf
+  lineinfile:
+    path: "{{tmp_file_path}}tgt_tmpfiles.conf"
+    regexp: 'x /tmp/krb5cc*'
+    line: 'x /tmp/krb5cc*'    
+    
+- name: reload systemd
+  systemd:
+    daemon_reload: yes
+ 
+- name: Set global umask
+  lineinfile:
+    path: /etc/profile
+    regexp: '^umask'
+    line: 'umask {{u_mask}} '   

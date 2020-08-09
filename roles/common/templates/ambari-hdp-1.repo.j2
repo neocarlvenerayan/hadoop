@@ -1,0 +1,19 @@
+[HDP-3.1.4.0]
+name=HDP Version - HDP-3.1.4.0
+baseurl=http://{{hostrepo}}/repo/HDP
+enabled=1
+priority=1
+gpgcheck={{gpcheck}}
+{% if gpcheck == 1 %}
+gpgkey={{gpkey_url}}
+{% endif %}
+
+[HDP-UTILS-1.1.0.22]
+name=HDP-UTILS Version - HDP-UTILS-1.1.0.22
+baseurl=http://{{hostrepo}}/repo/HDP-UTILS
+enabled=1
+priority=1
+gpgcheck={{gpcheck}}
+{% if gpcheck == 1 %}
+gpgkey={{gpkey_url}}
+{% endif %}

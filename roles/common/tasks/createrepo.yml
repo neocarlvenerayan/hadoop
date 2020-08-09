@@ -1,0 +1,33 @@
+---
+
+- name: run create repo
+  shell: "createrepo {{item}}"
+  with_items:
+     - "{{repopathlist}}"
+     
+- name: change permission of the repo     
+  shell: "chmod 0755 -R {{artifacts_dest}}"
+  
+- name: change chown of the repo     
+  shell: "chown root:root -R {{artifacts_dest}}"
+  
+- name: create repo link
+  shell: "ln -s {{artifacts_dest}} {{httpd_path}}/repo"  
+  
+- name: start httpd
+  service:
+    name: httpd
+    state: restarted
+
+- name: bootstarp httpd
+  service:
+    name: httpd
+    enabled: yes
+    
+- name: yum clean
+  shell: yum clean all
+              
+- name: Copy pgp
+  copy:
+    src: RPM-GPG-KEY-Jenkins
+    dest: /repo/ambari/RPM-GPG-KEY-Jenkins

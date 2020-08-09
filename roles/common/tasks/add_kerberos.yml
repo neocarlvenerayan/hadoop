@@ -1,0 +1,14 @@
+---
+
+- name: create kerberos.sh
+  template:
+    src: kerberos.j2
+    dest: /tmp/kerberos.sh
+  become_user: root
+    
+- name: exec kerberos.sh
+  shell: |
+         chmod u+x /tmp/kerberos.sh
+         /tmp/kerberos.sh    
+  become_user: root
+  

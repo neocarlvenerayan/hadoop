@@ -1,0 +1,36 @@
+---
+    
+- name: First login OF AD user 
+  shell: sudo su - '{{adnetbios}}\{{user1}}' -c 'whoami'
+  when: adnetbios|trim != ""  
+  
+- name: Set user to umask
+  lineinfile:
+    path: ~/.bashrc
+    regexp: '^umask'
+    line: 'umask {{u_mask}} '
+  become_user: '{{user1}}'   
+  when: adgroup|trim == ""  
+
+- name: Set user to umask AD
+  shell: "sudo su - '{{adnetbios}}\\{{user1}}' -c 'cat ~/.bashrc|grep -q umask && echo WARNING-UMASK-EXIST-ALREADY||echo umask {{u_mask}} >> ~/.bashrc'" 
+  when: adgroup|trim != ""  
+    
+- name: Allow user to sudoers
+  lineinfile:
+    dest:         /etc/sudoers
+    state:        present
+    regexp:       '^{{user1}}'
+    line:         '{{user1}} ALL=(ALL) NOPASSWD: ALL'
+    validate:     'visudo -cf %s'     
+  when: sudoer|default(False)==True and adgroup|trim == ""    
+    
+- name: Allow {{adgroup}} to sudoers
+  lineinfile:
+    dest:         /etc/sudoers
+    state:        present
+    regexp:       '^%{{adnetbios}}\\{{adgroup}}'
+    line:         '%{{adnetbios}}\\{{adgroup}} ALL=(ALL) NOPASSWD: ALL'
+    validate:     'visudo -cf %s'     
+  when: sudoer|default(False)==True and adgroup|trim != ""
+        

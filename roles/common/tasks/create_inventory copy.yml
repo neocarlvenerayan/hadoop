@@ -1,0 +1,82 @@
+---
+
+- file: path=temp47_007.log state=absent
+- file: path=temp47_008.log state=absent
+- file: path=temp47_009.log state=absent
+- file: path=temp47_010.log state=absent
+
+- name: Check bindings
+  shell: "cat /etc/multipath/bindings | tr -s '\n' '\n' | grep -v '#' > temp47_007.log || true" 
+ 
+- name: List the bindings 
+  shell: "tail -n 9 temp47_007.log > temp47_008.log || true" 
+    
+- name: Register the bindings    
+  shell: "cat temp47_008.log | awk 'NR=={{item}}{print $1}' || true"
+  register: w
+  with_sequence: start=0 count={{letters|length}}
+  
+- name: Save the raw prefix
+  set_fact: raw_prefix='mpath'
+  when: item.stdout|regex_search('mpath')
+  with_items: "{{w.results}}"
+  until: raw_prefix=='mpath'
+   
+- name: Get disk size
+  shell: |
+         if [[ $(fdisk -l /dev/{{raw_prefix}}{{item}} |  grep '/dev/{{raw_prefix}}{{item}}{{partition}}' | wc -l) = 0 ]]; then fdisk -l /dev/{{raw_prefix}}{{item}} | grep 'Disk /dev' | awk '{print $3}'; fi || true
+  register: x
+  with_items: "{{letters}}"
+
+- name: Get disk byte
+  shell: |
+         if [[ $(fdisk -l /dev/{{raw_prefix}}{{item}} |  grep '/dev/{{raw_prefix}}{{item}}{{partition}}' | wc -l) = 0 ]]; then fdisk -l /dev/{{raw_prefix}}{{item}} | grep 'Disk /dev' | awk '{print $4}'; fi || true
+  register: y
+  with_items: "{{letters}}"
+  
+- name: Make sure create temp47_010.log  
+  file: path=temp47_010.log state=touch
+  
+- name: Save skip_disks to temp
+  shell: |  
+         echo {{item}} >> temp47_010.log
+  with_items: "{{skip_disks}}" 
+  when: skip_disks[0] is defined  
+
+- name: Save to temp (skip if server is on the list) multiple partition
+  shell: |
+         if [ {{inventory_hostname.split(".")[0]|lower}}{{raw_prefix}}{{letters[item|int]}} == `grep {{inventory_hostname.split(".")[0]|lower}}{{raw_prefix}}{{letters[item|int]}} temp47_010.log` ]; then true; else echo "  - { server0: {{inventory_hostname.split(".")[0]|lower}}, disk0: {{raw_prefix}}{{letters[item|int]}}, partition0: {{partition}}, fsname0: '{{fs_name}}/ ', vgname0: {{logical_name}} vg, lvname0: {{logical_name}} lv, size0: {{disk_size}} } # {{x.results[item|int].stdout}} {{y.results[item|int].stdout | replace(',','')}}" 1>> temp47_009.log; fi
+  when: x.results[item|int].stdout|int>=1 and x.results[item|int].stdout is defined
+  with_sequence: start=0 count={{letters|length}}
+  when: multiple_disk==true   
+
+- name: Save to temp (skip if server is on the list) single partition
+  shell: |
+         if [ {{inventory_hostname.split(".")[0]|lower}}{{raw_prefix}}{{letters[item|int]}} == `grep {{inventory_hostname.split(".")[0]|lower}}{{raw_prefix}}{{letters[item|int]}} temp47_010.log` ]; then true; else echo "  - { server0: {{inventory_hostname.split(".")[0]|lower}}, disk0: {{raw_prefix}}{{letters[item|int]}}, partition0: {{partition}}, fsname0: '{{fs_name}}/', vgname0: {{logical_name}}vg, lvname0: {{logical_name}}lv, size0: {{disk_size}} } # {{x.results[item|int].stdout}} {{y.results[item|int].stdout | replace(',','')}}" 1>> temp47_009.log; fi
+  when: x.results[item|int].stdout|int>=1 and x.results[item|int].stdout is defined
+  with_sequence: start=0 count={{letters|length}}
+  when: multiple_disk==false  
+
+   
+- name: Remove blank line
+  shell: "sed -i '/^$/d' temp47_009.log || true"  
+  
+- name: Create headers
+  shell: |
+         echo --- >> {{path_log}}
+         echo >> {{path_log}}
+         echo disk_items: >> {{path_log}}
+  run_once: true       
+         
+- name: Add the variables array content multiple partition
+  shell: |
+         awk 'NR=={{item}} { print "  "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10"{{item}}"$11" "$12" "$13"{{item}}"$14" "$15" "$16"{{item}}"$17" "$18" "$19" "$20" "$21" "$22 }' temp47_009.log 1>> {{path_log}} || true
+  with_sequence: start=1 end={{count_disk|int}}
+  when: multiple_disk==true
+
+- name: Add the variables array content single partition
+  shell: |
+         awk 'NR=={{item}} { print "  "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "$10" "$11" "$12" "$13" "$14" "$15" "$16" "$17" "$18" "$19" "$20" "$21" "$22 }' temp47_009.log 1>> {{path_log}} || true
+  with_sequence: start=1 end={{count_disk|int}}
+  when: multiple_disk==false
+  

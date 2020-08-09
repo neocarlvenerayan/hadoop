@@ -1,0 +1,19 @@
+---
+
+### add the creation of yum repo here
+
+- name: copy ambari.repo
+  template: 
+    src: ambari.repo.j2
+    dest: /etc/yum.repos.d/ambari.repo
+    mode: 0644
+  when: ambarirepo|default(True)==True  
+    
+- name: copy ambari-hdp-1.repo
+  template: 
+    src: ambari-hdp-1.repo.j2
+    dest: "/etc/yum.repos.d/ambari-hdp-{{hdpcount|default('1')}}.repo"
+    mode: 0644
+  when: hdprepo|default(True)==True  
+    
+- shell: yum clean all    

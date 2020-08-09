@@ -1,0 +1,106 @@
+
+- include_tasks: selinux.yml
+  when: selinux|default(False)==True
+  
+- include_tasks: yum.yml
+  when: yum|default(False)==True     
+
+- include_tasks: copyrepo.yml
+  when: copyrepo|default(False)==True     
+  
+- include_tasks: ambari_server.yml
+  when: ambari_server|default(False)==True     
+
+- include_tasks: add_ip.yml
+  when: add_ip|default(False)==True
+
+- include_tasks: add_email.yml
+  when: add_email|default(False)==True  
+  
+- include_tasks: download_repo.yml
+  when: download_repo|default(False)==True  
+
+- include_tasks: get_raw_disk_prefix.yml
+  when: get_raw_disk_prefix|default(False)==True
+
+- include_tasks: get_raw_disk.yml
+  when: get_raw_disk|default(False)==True  
+  
+- include_tasks: create_inventory.yml
+  when: create_inventory|default(False)==True       
+
+- include_tasks: create_partition.yml
+  when: create_partition|default(False)==True and inventory_hostname.split(".")[0] | lower == server.split(".")[0] | lower 
+
+- include_tasks: create_partition_nolog.yml
+  when: create_partition_nolog|default(False)==True and inventory_hostname.split(".")[0] | lower == server.split(".")[0] | lower 
+    
+- include_tasks: remove_partition_nolog.yml
+  when: remove_partition_nolog|default(False)==True and inventory_hostname.split(".")[0] | lower == server.split(".")[0] | lower 
+    
+- include_tasks: resize_logical.yml
+  when: resize_logical|default(False)==True and inventory_hostname.split(".")[0] | lower == server.split(".")[0] | lower
+
+- include_tasks: check_vglv_name.yml
+  when: check_vglv_name|default(False)==True    
+
+- include_tasks: check_partition.yml
+  when: check_partition|default(False)==True    
+
+- include_tasks: vgextend.yml
+  when: vgextend|default(False)==True                     
+         
+- include_tasks: mv_inventory.yml
+  when: mv_inventory|default(False)==True     
+
+- include_tasks: add_user.yml
+  when: add_user|default(False)==True     
+
+- include_tasks: add_sudoers.yml
+  when: add_sudoers|default(False)==True     
+
+- include_tasks: add_sshkey.yml
+  when: add_sshkey|default(False)==True
+
+- include_tasks: add_sshkey1.yml
+  when: add_sshkey1|default(False)==True   
+  
+- include_tasks: add_sshkey2.yml
+  when: add_sshkey2|default(False)==True   
+  
+- include_tasks: extract.yml
+  when: extract|default(False)==True    
+
+- include_tasks: copy_ambarisudo.yml
+  when: copy_ambarisudo|default(False)==True    
+
+- include_tasks: disable_tmp_cleanup.yml
+  when: disable_tmp_cleanup|default(False)==True    
+
+- include_tasks: move_log.yml
+  when: move_log|default(False)==True    
+ 
+- include_tasks: misc2.yml
+  when: misc2|default(False)==True    
+    
+- include_tasks: limits.yml
+  when: limits|default(False)==True    
+    
+- include_tasks: add_ldap.yml
+  when: add_ldap|default(False)==True    
+
+- include_tasks: add_kerberos.yml
+  when: add_kerberos|default(False)==True    
+
+- include_tasks: add_javahome.yml
+  when: add_javahome|default(False)==True    
+
+- include_tasks: add_kerberos_service.yml
+  when: add_kerberos_service|default(False)==True    
+
+- include_tasks: deletehdprepo.yml
+  when: deletehdprepo|default(False)==True    
+  
+- include_tasks: createrepo.yml
+  when: createrepo|default(False)==True 
+  

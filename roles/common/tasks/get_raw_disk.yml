@@ -1,0 +1,51 @@
+---
+
+- file: path="{{tmp_folder}}/temp43_007.log" state=absent
+- file: path="{{tmp_folder}}/temp44_008.log" state=absent
+
+- name: Check bindings
+  shell: "cat /etc/multipath/bindings | tr -s '\n' '\n' | grep -v '#' > {{tmp_folder}}/temp43_007.log || true" 
+ 
+- name: List the bindings 
+  shell: "tail -n 9 {{tmp_folder}}/temp43_007.log > {{tmp_folder}}/temp44_008.log || true" 
+    
+- name: Register the bindings    
+  shell: "cat {{tmp_folder}}/temp44_008.log | awk 'NR=={{item}}{print $1}' || true"
+  register: w
+  with_sequence: start=0 count={{letters|length}}
+      
+- name: Save the raw prefix
+  set_fact: raw_prefix='mpath'
+  when: item.stdout|regex_search('mpath')
+  with_items: "{{w.results}}"
+  until: raw_prefix=='mpath'
+   
+- name: Get disk size
+  shell: |
+         if [[ $(fdisk -l /dev/{{raw_prefix}}{{item}} |  grep '/dev/{{raw_prefix}}{{item}}{{partition}}' | wc -l) = 0 ]]; then fdisk -l /dev/{{raw_prefix}}{{item}} | grep 'Disk /dev' | awk '{print $3}'; fi || true
+  register: x
+  with_items: "{{letters}}"
+
+- name: Get disk byte
+  shell: |
+         if [[ $(fdisk -l /dev/{{raw_prefix}}{{item}} |  grep '/dev/{{raw_prefix}}{{item}}{{partition}}' | wc -l) = 0 ]]; then fdisk -l /dev/{{raw_prefix}}{{item}} | grep 'Disk /dev' | awk '{print $4}'; fi || true
+  register: y
+  with_items: "{{letters}}"
+
+- name: Print header
+  shell: |
+         echo "{{inventory_hostname}}" >> {{tmp_folder}}/{{log_file}}
+         echo "" >> {{tmp_folder}}/{{log_file}}
+    
+- name: Save to log
+  shell: |
+         echo "    disk={{raw_prefix}}{{x.results[item|int].item}} size={{x.results[item|int].stdout}} {{y.results[item|int].stdout | replace(',','')}}" >> {{path_log}}
+  when: x.results[item|int].stdout|int>=1 and x.results[item|int].stdout is defined
+  with_sequence: start=0 count={{letters|length}}
+
+- name: Show to ansible log
+  debug:
+    msg: 
+      - "    disk={{raw_prefix}}{{x.results[item|int].item}} size={{x.results[item|int].stdout}} {{y.results[item|int].stdout | replace(',','')}}"  
+  when: x.results[item|int].stdout|int>=1 and x.results[item|int].stdout is defined
+  with_sequence: start=0 count={{letters|length}}

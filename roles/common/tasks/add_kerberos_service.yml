@@ -1,0 +1,89 @@
+---
+
+- name: Add the KERBEROS Service to cluster
+  shell: |
+       curl -H "X-Requested-By:ambari" -u admin:admin -i -X POST http://localhost:8080/api/v1/clusters/{{clustername}}/services/KERBEROS
+  args:
+    chdir: /tmp
+    
+- name: Add the KERBEROS_CLIENT component to the KERBEROS service
+  shell: |
+       curl -H "X-Requested-By:ambari" -u admin:admin -i -X POST http://localhost:8080/api/v1/clusters/{{clustername}}/services/KERBEROS/components/KERBEROS_CLIENT
+  args:
+    chdir: /tmp
+ 
+- name: Copy payload1
+  copy:
+    src: "{{env}}/payload1"
+    dest: /tmp/payload1
+    
+- name: Create and set KERBEROS service configurations
+  shell: |
+       curl -H "X-Requested-By:ambari" -u admin:admin -i -X PUT -d @./payload1 http://localhost:8080/api/v1/clusters/{{clustername}}
+  args:
+    chdir: /tmp 
+
+
+- name: create kerberos client
+  template:
+     src: '{{env}}/kerberosclient.j2'
+     dest: /tmp/kerberosclient.sh
+     owner: root
+
+- name: execute kerberos client
+  shell: |
+       chmod u+x /tmp/kerberosclient.sh
+       /tmp/kerberosclient.sh
+  become_user: root  
+
+- name: Install the KERBEROS service and components
+  shell: |
+       curl -H "X-Requested-By:ambari" -u admin:admin -i -X PUT -d '{"ServiceInfo": {"state" : "INSTALLED"}}' http://localhost:8080/api/v1/clusters/{{clustername}}/services/KERBEROS
+  args:
+    chdir: /tmp 
+  
+- name: Stop all services
+  shell: |
+       curl -H "X-Requested-By:ambari" -u admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Stop Service"},"Body":{"ServiceInfo":{"state":"INSTALLED"}}}' http://localhost:8080/api/v1/clusters/{{clustername}}/services
+  args:
+    chdir: /tmp 
+
+- name: Copy payload2
+  copy:
+    src: '{{env}}/payload2'
+    dest: /tmp/payload2
+    
+- name: Set the Kerberos Descriptor # note you can GET first the payload2 from manual kerberos
+  shell: |
+       curl -H "X-Requested-By:ambari" -u admin:admin -i -X POST -d @./payload2 http://localhost:8080/api/v1/clusters/{{clustername}}/artifacts/kerberos_descriptor
+  args:
+    chdir: /tmp
+
+- name: Copy payload3
+  copy:
+    src: '{{env}}/payload3'
+    dest: /tmp/payload3
+    
+- name: Set the KDC administrator credentials
+  shell: |
+       curl -H "X-Requested-By:ambari" -u admin:admin -i -X POST -d @./payload3 http://localhost:8080/api/v1/clusters/{{clustername}}/credentials/kdc.admin.credential
+  args:
+    chdir: /tmp 
+        
+- name: Copy payload4
+  copy:
+    src: '{{env}}/payload4'
+    dest: /tmp/payload4
+    
+- name: Enable Kerberos # error here ???
+  shell: |
+       curl -H "X-Requested-By:ambari" -u admin:admin -i -X POST -d @./payload4 http://localhost:8080/api/v1/clusters/{{clustername}}
+  args:
+    chdir: /tmp 
+                
+- name: Start all services
+  shell: |
+       curl -H "X-Requested-By:ambari" -u admin:admin -i -X PUT -d '{"ServiceInfo": {"state" : "STARTED"}}' http://localhost:8080/api/v1/clusters/{{clustername}}/services
+  args:
+    chdir: /tmp 
+                                

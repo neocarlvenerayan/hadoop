@@ -1,0 +1,21 @@
+---
+
+- name: Get version console header
+  shell: |
+         echo 'Check Partition REPORT' >> {{path_log}}
+         echo >> {{path_log}}
+  run_once: true
+
+
+- name: check {{path_2check}}
+  shell: 'df -h {{path_2check}} > {{tmp_folder}}/path_2check && chmod 0755 {{tmp_folder}}/path_2check'
+  become: true
+    
+- name: save to log
+  shell: |
+         echo >> {{path_log}}
+         hostname -s 1>> {{path_log}}
+         echo >> {{path_log}}
+         cat {{tmp_folder}}/path_2check 1>> {{path_log}}
+         echo **************************************** >> {{path_log}}
+                  

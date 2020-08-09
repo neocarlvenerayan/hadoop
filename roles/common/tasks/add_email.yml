@@ -1,0 +1,10 @@
+---
+
+- name: Copy email.yml
+  copy:
+    src: email.yml
+    dest: ./email.yml
+    mode: 0664  
+    force: no
+  run_once: true
+  delegate_to: localhost # ansible        

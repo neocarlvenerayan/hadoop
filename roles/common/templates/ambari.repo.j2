@@ -1,0 +1,9 @@
+[ambari-2.7.4.0]
+name=ambari Version - ambari-2.7.4.0
+baseurl=http://{{hostrepo}}/repo/ambari
+enabled=1
+priority=1
+gpgcheck={{gpcheck}}
+{% if gpcheck == 1 %}
+gpgkey={{gpkey_url}}
+{% endif %}

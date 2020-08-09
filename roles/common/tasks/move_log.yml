@@ -1,0 +1,153 @@
+---
+
+# not use anymore
+
+- name: Make sure this exist {{hadoop1log_path}} 
+  file:
+    path: "{{hadoop1log_path}}"
+    state: directory
+    mode: '0755'
+      
+- name: Make sure the ambari-agent service is stop
+  shell: "/etc/init.d/ambari-agent stop"
+  register: p
+
+- name: If above failed, try this stop
+  service:
+    name: ambari-agent
+    state: stopped
+  when: p is failed
+  register: m
+    
+- name: the ambari-agent start failed!!!
+  fail:
+    msg: "ERROR: the ambari-agent start failed!!!  ######################"
+  when: m is failed
+  
+- block:
+    - name: Make sure the ambari-server service is stop
+      service:
+        name: ambari-server
+        state: stopped
+      register: q
+      when: run_master_server|default(False)==True
+    
+    - name: the ambari-server stop failed!!!
+      fail:
+        msg: "ERROR: the ambari-server stop failed!!!  ######################"
+      when: q is failed and run_master_server|default(False)==True
+                     
+    - name: Move ambari logs agent
+      shell: |
+             mv /var/log/ambari-agent/ {{hadoop1log_path}}
+      register: x
+
+    - name: fail the play agent
+      fail:
+        msg: "ERROR: copying /var/log/ambari-(server/agent) failed ######################"
+      when: x is failed  
+
+    - name: Move ambari logs server
+      shell: |
+             mv /var/log/ambari-server/ {{hadoop1log_path}}
+      register: y
+      when: run_master_server|default(False)==True
+      
+    - name: fail the play server
+      fail:
+        msg: "ERROR: copying /var/log/ambari-server failed ######################"
+      when: y is failed and run_master_server|default(False)==True  
+      
+    - name: create server link
+      shell: |
+             ln -s {{hadoop1log_path}}ambari-server /var/log/ambari-server  
+      register: y
+      when: run_master_server|default(False)==True
+      
+    - name: the link server failed
+      fail:
+        msg: "ERROR: creating link on  {{hadoop1log_path}}server to /hadoop/1/log  ######################"
+      when: y is failed and run_master_server|default(False)==True
+      
+    - name: create agent link
+      shell: |
+             ln -s {{hadoop1log_path}}ambari-agent /var/log/ambari-agent
+      register: z
+        
+    - name: the link failed
+      fail:
+        msg: "ERROR: creating link on  {{hadoop1log_path}}agent to /hadoop/1/log  ######################"
+      when: z is failed
+  when: inventory_hostname in groups['master']  
+   
+- block:  
+    - block:               
+        - name: Move ambari logs
+          shell: |
+                 mv /var/log/ambari-agent/ {{hadoop1log_path}}
+          register: x
+          
+        - name: fail the play agent master-member
+          fail:
+            msg: "ERROR: copying /var/log/ambari-agent failed ######################"
+          when: x is failed  
+          
+        - name: create server link
+          shell: |
+                 ln -s {{hadoop1log_path}}ambari-agent /var/log/ambari-agent
+          register: z
+        
+        - name: Success link
+          debug:
+            msg: "SUCCESS: link on {{hadoop1log_path}}agent to /hadoop/1/log ######################"
+          when: z is not failed  
+        
+        - name: the agent link failed
+          fail:
+            msg: "ERROR: creating link on  {{hadoop1log_path}}ambari-agent to /hadoop/1/log  ######################"
+          when: z is failed  
+      when: inventory_hostname in groups['master-member'] 
+  when: run_master_member|default(False)==True
+  
+- block:               
+    - name: Move ambari logs
+      shell: |
+             mv /var/log/ambari-agent/ {{hadoop1log_path}}
+      register: x
+      
+    - name: fail the ambari move agent
+      fail:
+        msg: "ERROR: copying /var/log/ambari-agent failed ######################"
+      when: x is failed  
+      
+    - name: create agent link
+      shell: |
+             ln -s {{hadoop1log_path}}ambari-agent /var/log/ambari-agent
+      register: z
+        
+    - name: the agent link failed
+      fail:
+        msg: "ERROR: creating link on {{hadoop1log_path}}ambari-agent to /hadoop/1/log  ######################"
+      when: z is failed  
+  when: inventory_hostname in groups['master-woker']
+ 
+- name: Make sure the ambari-agent service is started ALL
+  shell: "/etc/init.d/ambari-agent start"
+  register: s
+  
+- name: If above failed, try this start
+  service:
+    name: ambari-agent
+    state: started
+  when: s is failed
+  register: n
+  
+- name: the ambari-agent start failed!!!
+  fail:
+    msg: "ERROR: the ambari-agent start failed!!!  ######################"
+  when: n is failed      
+    
+- name: reload systemd
+  systemd:
+    daemon_reload: yes
+       

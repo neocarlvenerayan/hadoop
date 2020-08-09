@@ -1,0 +1,23 @@
+---
+
+- name: Make sure the ntpd service is started
+  service:
+    name: ntpd
+    state: started
+
+- name: Make sure the ntpd service is enabled
+  service:
+    name: ntpd
+    enabled: yes
+  ignore_errors: true
+  
+- name: Make sure the firewalld service is stop
+  service:
+    name: firewalld
+    state: stopped
+
+- name: Make sure the firewalld service is disabled
+  service:
+    name: firewalld
+    enabled: no
+  ignore_errors: true

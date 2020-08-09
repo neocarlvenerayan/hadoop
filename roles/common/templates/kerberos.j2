@@ -1,0 +1,76 @@
+#!/bin/bash
+
+systemctl enable rngd
+systemctl start rngd
+
+# create -template
+echo '# Configuration snippets may be placed in this directory as well
+includedir /etc/krb5.conf.d/
+  
+[logging]
+  default = FILE:/var/log/krb5libs.log
+  kdc = FILE:/var/log/krb5kdc.log
+  admin_server = FILE:/var/log/kadmind.log
+  
+[libdefaults]
+  dns_lookup_realm = false
+  ticket_lifetime = 24h
+  renew_lifetime = 7d
+  forwardable = true
+  rdns = false
+  pkinit_anchors = DIR:/var/lib/pbis/trusted_certs
+  default_keytab_name = /etc/krb5.keytab
+  default_realm = {{ad_domain}}
+  default_tgs_enctypes = AES256-CTS AES128-CTS RC4-HMAC DES-CBC-MD5 DES-CBC-CRC
+  default_tkt_enctypes = AES256-CTS AES128-CTS RC4-HMAC DES-CBC-MD5 DES-CBC-CRC
+  preferred_enctypes = AES256-CTS AES128-CTS RC4-HMAC DES-CBC-MD5 DES-CBC-CRC
+  dns_lookup_kdc = true
+  pkinit_kdc_hostname = <DNS>
+  pkinit_cert_match = &&<EKU>msScLogin<PRINCIPAL>
+  pkinit_eku_checking = kpServerAuth
+  pkinit_win2k_require_binding = false
+  pkinit_identities = PKCS11:/opt/pbis/lib64/libpkcs11.so
+  #BT default_ccache_name = KEYRING:persistent:%{uid}
+  
+[realms]
+  {{ad_domain}} = {
+   auth_to_local = RULE:[1:$0\$1](^{{adnetbios}}\.{{ad_dc}}\\.*)s/^{{adnetbios}}\.{{ad_dc}}/{{adnetbios}}/
+   auth_to_local = DEFAULT
+   admin_server = {{ad_server}}.{{ad_domain_lower}}
+   kdc = {{ad_server}}.{{ad_domain_lower}}
+  }
+  
+[domain_realm]
+   {{ad_domain_lower}} = {{ad_domain}}
+  .{{ad_domain_lower}} = {{ad_domain}}
+[capaths]
+[appdefaults]
+  pam = {
+   mappings = {{adnetbios}}\\(.*) $1@{{ad_domain}}
+   forwardable = true
+   validate = true
+  }
+  httpd = {
+   mappings = {{adnetbios}}\\(.*) $1@{{ad_domain}}
+   reverse_mappings = (.*)@{{adnetbios}}\.{{ad_dc}} {{adnetbios}}\$1
+  }
+'> /etc/krb5.conf
+
+kdb5_util create -P {{default_password}} -s
+
+echo '*/admin@{{ad_domain}} *' > /var/kerberos/krb5kdc/kadm5.acl
+sed -i 's/EXAMPLE.COM/{{ad_domain}}/g' /var/kerberos/krb5kdc/kdc.conf 
+
+kadmin.local -q "addprinc -pw {{default_password}} root/admin@{{ad_domain}}"
+
+# add user keyadmin for Ranger KMS, not needed yet ???
+kadmin.local -q 'addprinc -pw keyadmin keyadmin'
+
+# add user nn for Ranger KMS, not needed yet ???
+adduser nn
+kadmin.local -q 'addprinc -randkey nn'
+
+systemctl enable krb5kdc
+systemctl start krb5kdc
+systemctl enable kadmin
+systemctl start kadmin

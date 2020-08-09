@@ -1,0 +1,94 @@
+---
+
+- file: path="/tmp/temp43_hadoop.log" state=absent
+- file: path="/tmp/temp44_hadoop.log" state=absent
+
+- shell: "cat /etc/multipath/bindings | tr -s '\n' '\n' | grep -v '#' > /tmp/temp43_hadoop.log" 
+  ignore_errors: true
+  
+- shell: "tail -n 9 /tmp/temp43_hadoop.log > /tmp/temp44_hadoop.log" 
+  ignore_errors: true
+    
+- shell: "cat /tmp/temp44_hadoop.log | awk 'NR=={{item}}{print $1}'"
+  ignore_errors: true
+  register: w
+  with_items: '{{numbers}}'
+      
+- set_fact: raw_prefix='mpath'
+  when: item.stdout|regex_search('mpath')
+  with_items: "{{w.results}}"
+  until: raw_prefix=='mpath'
+   
+- block: 
+
+    - shell: |
+             if [[ $(fdisk -l /dev/mapper/{{w.results[item].stdout}} |  grep '/dev/mapper/{{w.results[item].stdout}}{{partition}}' | wc -l) = 0 ]]; then fdisk -l /dev/mapper/{{w.results[item].stdout}} | grep 'Disk /dev' | awk '{print $3}' ; fi
+      ignore_errors: true
+      register: u
+      with_items: '{{numbers}}' 
+  
+    - shell: |
+             if [[ $(fdisk -l /dev/mapper/{{w.results[item].stdout}} |  grep '/dev/mapper/{{w.results[item].stdout}}{{partition}}' | wc -l) = 0 ]]; then fdisk -l /dev/mapper/{{w.results[item].stdout}} | grep 'Disk /dev' | awk '{print $4}' ; fi
+      ignore_errors: true
+      register: v
+      with_items: '{{numbers}}' 
+      
+    # there is a bug on 2.6.x and this is the only way
+    - set_fact: gotit='{{w.results[0].stdout}}'
+      when: u.results[0].stdout|int>={{disk_size_2check}} and u.results[0].stdout|int<{{disk_size_2check}}.9 and v.results[0].stdout|regex_search('GB') and u.results[0].stdout is defined and w.results[0].stdout!='' 
+    - set_fact: gotit='{{w.results[1].stdout}}'                                                                                                                               
+      when: u.results[1].stdout|int>={{disk_size_2check}} and u.results[1].stdout|int<{{disk_size_2check}}.9 and v.results[1].stdout|regex_search('GB') and u.results[1].stdout is defined and w.results[1].stdout!='' 
+    - set_fact: gotit='{{w.results[2].stdout}}'                                                                                                                               
+      when: u.results[2].stdout|int>={{disk_size_2check}} and u.results[2].stdout|int<{{disk_size_2check}}.9 and v.results[2].stdout|regex_search('GB') and u.results[2].stdout is defined and w.results[2].stdout!='' 
+    - set_fact: gotit='{{w.results[3].stdout}}'                                                                                                                               
+      when: u.results[3].stdout|int>={{disk_size_2check}} and u.results[3].stdout|int<{{disk_size_2check}}.9 and v.results[3].stdout|regex_search('GB') and u.results[3].stdout is defined and w.results[3].stdout!='' 
+    - set_fact: gotit='{{w.results[4].stdout}}'                                                                                                                               
+      when: u.results[4].stdout|int>={{disk_size_2check}} and u.results[4].stdout|int<{{disk_size_2check}}.9 and v.results[4].stdout|regex_search('GB') and u.results[4].stdout is defined and w.results[4].stdout!='' 
+    - set_fact: gotit='{{w.results[5].stdout}}'                                                                                                                               
+      when: u.results[5].stdout|int>={{disk_size_2check}} and u.results[5].stdout|int<{{disk_size_2check}}.9 and v.results[5].stdout|regex_search('GB') and u.results[5].stdout is defined and w.results[5].stdout!='' 
+    - set_fact: gotit='{{w.results[6].stdout}}'                                                                                                                               
+      when: u.results[6].stdout|int>={{disk_size_2check}} and u.results[6].stdout|int<{{disk_size_2check}}.9 and v.results[6].stdout|regex_search('GB') and u.results[6].stdout is defined and w.results[6].stdout!='' 
+    - set_fact: gotit='{{w.results[7].stdout}}'                                                                                                                               
+      when: u.results[7].stdout|int>={{disk_size_2check}} and u.results[7].stdout|int<{{disk_size_2check}}.9 and v.results[7].stdout|regex_search('GB') and u.results[7].stdout is defined and w.results[7].stdout!='' 
+    - set_fact: gotit='{{w.results[8].stdout}}'                                                                                                                               
+      when: u.results[8].stdout|int>={{disk_size_2check}} and u.results[8].stdout|int<{{disk_size_2check}}.9 and v.results[8].stdout|regex_search('GB') and u.results[8].stdout is defined and w.results[8].stdout!='' 
+    - set_fact: gotit='{{w.results[9].stdout}}'                                                                                                                               
+      when: u.results[9].stdout|int>={{disk_size_2check}} and u.results[9].stdout|int<{{disk_size_2check}}.9 and v.results[9].stdout|regex_search('GB') and u.results[9].stdout is defined and w.results[9].stdout!='' 
+
+    - shell: "echo '{{inventory_hostname}}  disk1={{gotit}}' >> {{pre_check_logs}}"
+      when: gotit is defined
+            
+  when: raw_prefix=='mpath'
+
+- block: 
+    
+    - name: Register to x
+      shell: |
+             if [[ $(fdisk -l /dev/{{raw_prefix}}{{item}} |  grep '/dev/{{raw_prefix}}{{item}}{{partition}}' | wc -l) = 0 ]]; then fdisk -l /dev/{{raw_prefix}}{{item}} | grep 'Disk /dev' | awk '{print $3}' ; fi
+      ignore_errors: true
+      register: x
+      with_items: "{{letters}}"
+
+    - name: Register to y  
+      shell: |
+             if [[ $(fdisk -l /dev/{{raw_prefix}}{{item}} |  grep '/dev/{{raw_prefix}}{{item}}{{partition}}' | wc -l) = 0 ]]; then fdisk -l /dev/{{raw_prefix}}{{item}} | grep 'Disk /dev' | awk '{print $4}' ; fi
+      ignore_errors: true
+      register: y
+      with_items: "{{letters}}"
+    
+    - name: Save to gotit
+      set_fact: gotit='{{x.results[item].item}}'
+      when: x.results[item].stdout|int>={{disk_size_2check}} and x.results[item].stdout|int<{{disk_size_2check}}.9 and y.results[item].stdout|regex_search('GB') and x.results[item].stdout is defined
+      with_items: '{{numbers}}'
+      until: gotit is defined
+
+    #- name: Save to log        
+    #  shell: "echo '{{inventory_hostname}}  disk1={{raw_prefix}}{{gotit}}' >> {{pre_check_logs}}"
+    #  when: gotit=='{{item}}'
+    #  with_items: "{{letters}}"
+    #  until: gotit=='{{item}}'
+
+  when: raw_prefix=='sd'
+  
+- name: Show results
+  shell: 'echo {{gotit}} - {{pre_check_logs}}'

@@ -1,0 +1,20 @@
+---
+- name: Copy file from Artifactory
+  get_url: 
+     url: "{{ Package_url }}/{{ Package_name }}"  
+     dest: "{{ install_dir }}" 
+     headers: "X-JFrog-Art-Api:{{artifactory_download_key}}" 
+     validate_certs: no
+#     owner: 
+#     group: 
+#     tmp_dest: 
+#     mode: 0755
+     force: no
+  
+- name: Uncompress package/file
+  unarchive:
+    src: "{{ install_dir }}/{{ Package_name }}"
+    dest: "{{ install_dir }}"
+    keep_newer: yes
+    remote_src: yes    
+    

@@ -1,0 +1,32 @@
+---
+
+- include_vars: "{{env}}.yml"
+  
+#- name: remove server name fdqn
+#  shell: |
+#        sed -i 's/{{inventory_hostname}}//g' /etc/hosts
+#
+#- name: get hostname only
+#  shell: |
+#        /usr/bin/hostname -s 
+#  register: x
+#    
+#- name: remove server name
+#  shell: |
+#        sed -i 's/{{x.stdout}}//g' /etc/hosts
+
+- name: add hosts
+  shell: |     
+     echo '{{item.ip}} {{item.fqdn}} {{item.server}}' >> /etc/hosts
+  with_items: "{{network_list}}"
+
+- name: add dc manually
+  shell: |     
+     echo '{{dns_name1}} {{ad_server}}.{{ad_domain|lower}} {{ad_server}}' >> /etc/hosts
+  
+# for one repo only on 2 or more env  
+- name: add repo yum
+  shell: |     
+     echo "{{hostvars[groups['yum'][0]].ansible_host}} {{hostvars[groups['yum'][0]].inventory_hostname}} {{hostvars[groups['yum'][0]].inventory_hostname.split('.')[0]}}" >> /etc/hosts
+  when: env=='sit' and cloud!='onprem'
+  

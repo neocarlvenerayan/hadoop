@@ -1,0 +1,32 @@
+---
+
+- name: create header for the report
+  shell: |
+         echo 'VG LV NAME REPORT' >> {{path_log}}
+         echo >> {{path_log}}
+  run_once: true
+
+- name: get vgs lvs partition 1
+  shell: |
+         vgs 2>&1 > {{tmp_folder}}/vgs && chmod 0755 {{tmp_folder}}/vgs
+         lvs 2>&1 > {{tmp_folder}}/lvs && chmod 0755 {{tmp_folder}}/lvs
+  become: true
+  
+- name: get vgs lvs partition 2
+  shell: |         
+         df -h {{item}} 2>&1 >> {{tmp_folder}}/path_2check_{{datestamp}} && chmod 0755 {{tmp_folder}}/path_2check_{{datestamp}}
+  become: true
+  with_items: '{{path_2check}}'
+      
+- name: save to logs
+  shell: |
+         echo >> {{path_log}}
+         hostname -s 1>> {{path_log}}
+         echo >> {{path_log}}
+         cat {{tmp_folder}}/vgs >> {{path_log}}
+         echo >> {{path_log}}
+         cat {{tmp_folder}}/lvs >> {{path_log}}
+         echo >> {{path_log}}
+         cat {{tmp_folder}}/path_2check_{{datestamp}} >> {{path_log}}
+         echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~' >> {{path_log}}
+            

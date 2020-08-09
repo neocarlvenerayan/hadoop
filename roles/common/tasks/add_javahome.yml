@@ -1,0 +1,8 @@
+---
+
+- name: add java_home
+  shell: |
+      sudo su - ambari -l -c "grep 'export JAVA_HOME={{postgres_java_rootfolder}}{{postgres_java_folder}}' .bashrc || echo 'export JAVA_HOME={{postgres_java_rootfolder}}{{postgres_java_folder}}' >> .bashrc"
+      sudo su - '{{adnetbios}}\{{user1}}' -l -c "grep 'export JAVA_HOME={{postgres_java_rootfolder}}{{postgres_java_folder}}' .bashrc || echo 'export JAVA_HOME={{postgres_java_rootfolder}}{{postgres_java_folder}}' >> .bashrc"
+      sudo su - root -l -c "grep 'export JAVA_HOME={{postgres_java_rootfolder}}{{postgres_java_folder}}' .bashrc || echo 'export JAVA_HOME={{postgres_java_rootfolder}}{{postgres_java_folder}}' >> .bashrc"
+    

@@ -1,0 +1,8 @@
+---
+
+- name: mv inventory/email to yml
+  shell: |
+         rm -f ./email.yml || true
+         mv ./email.txt ./email.yml
+  run_once: true
+  delegate_to: localhost # ansible      
