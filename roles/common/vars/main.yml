@@ -1,16 +1,6 @@
 gpcheck: 1
 gpkey_url: "http://{{hostrepo}}/repo/ambari/RPM-GPG-KEY-Jenkins"
 clustername: "hadoop{{env}}" 
-deleterepo: false
-extract_repo: false
-artifacts_dest: "/tmp/pbis-open/"
-create_dest: true 
-owner_file: root
-group_file: root
-mode_file: 0750   
-mode_folder: 0750  
-artifactslist:
-    - { url: '{{download_url}}', name: 'pbis-open-9.1.0.551.linux.x86_64.rpm.sh' }  
 network_list:
   - { ip: "{{hostvars[groups['master'][0]].ansible_host}}", server: "{{hostvars[groups['master'][0]].inventory_hostname.split('.')[0]}}", fqdn: "{{hostvars[groups['master'][0]].inventory_hostname}}" }
   - { ip: "{{hostvars[groups['worker1'][0]].ansible_host}}", server: "{{hostvars[groups['worker1'][0]].inventory_hostname.split('.')[0]}}", fqdn: "{{hostvars[groups['worker1'][0]].inventory_hostname}}" }
@@ -25,9 +15,30 @@ tmp_file_path: '/etc/tmpfiles.d/'
 hadoop1log_path: '/hadoop/1/log/'
 user1: ambari
 u_mask: "022" 
-run_master_server: true # false for testing
-run_master_member: true # false for dev
+run_master_server: true 
+run_master_member: true 
 soft_no_file: 4096
 hard_no_file: 65536
 soft_nproc: 2047
 hard_nproc: 16384
+rhel_7:
+   - httpd
+   - createrepo     
+artifacts_dest: /repo/
+create_dest: true
+deleterepo: true
+extract_repo: true
+owner_file: root
+group_file: root
+mode_file: 0755     
+mode_folder: 0755     
+artifactslist:
+       - { url: '{{download_url}}', name: 'ambari-2.7.4.0-centos7.tar.gz' }
+       - { url: '{{download_url}}', name: 'HDP-3.1.4.0-centos7-rpm.tar.gz' }
+       - { url: '{{download_url}}', name: 'HDP-UTILS-1.1.0.22-centos7.tar.gz' }
+httpd_path: /var/www/html/
+repopathlist:
+      - '{{artifacts_dest}}ambari'
+      - '{{artifacts_dest}}HDP'
+      - '{{artifacts_dest}}HDP-UTILS'   
+hostrepo: "{{groups['yum'][0]}}" 

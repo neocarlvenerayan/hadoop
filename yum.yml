@@ -1,0 +1,22 @@
+
+- name: Configure worker21 to httpd/createrepo for yum
+  hosts: yum 
+  become: true
+  any_errors_fatal: True
+  roles:
+    - { role: common, yum: true, yum_install: true, yum_clean_all: true }
+
+- name: Download ambari yum
+  hosts: yum 
+  become: true
+  any_errors_fatal: True  
+  roles:
+    - { role: common, download_repo: true }
+    - { role: common, createrepo: true }
+
+- name: Copy ambari yum to all
+  hosts: all
+  become: true
+  any_errors_fatal: True  
+  roles:
+    - { role: common, copyrepo: true }
