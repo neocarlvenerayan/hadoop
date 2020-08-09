@@ -8,9 +8,6 @@
 - include_tasks: copyrepo.yml
   when: copyrepo|default(False)==True     
   
-- include_tasks: ambari_server.yml
-  when: ambari_server|default(False)==True     
-
 - include_tasks: add_ip.yml
   when: add_ip|default(False)==True
 
