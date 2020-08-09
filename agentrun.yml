@@ -1,0 +1,6 @@
+- name: Configure ambari-agent and run
+  hosts: master-worker 
+  become: true
+  any_errors_fatal: True
+  roles:
+    - { role: ambari, ambari_agent_run: true }

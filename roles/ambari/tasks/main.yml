@@ -1,0 +1,3 @@
+  
+- include_tasks: ambari_agent_run.yml
+  when: ambari_agent_run|default(False)==True
