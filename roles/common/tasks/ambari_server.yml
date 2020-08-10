@@ -1,8 +1,0 @@
----  
-
-- name: install ambari binaries
-  yum: name={{item}} state=present
-  with_items: 
-    - "{{ambariserverlist}}"
-  
-- meta: flush_handlers
