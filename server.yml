@@ -1,15 +1,3 @@
-- name: Configure httpd/createrepo for yum
-  hosts: yum
-  become: true
-  any_errors_fatal: True
-  vars:
-    rhel_7:
-      - httpd
-      - createrepo     
-      - deltarpm
-      - epel-release
-  roles:
-    - { role: common, yum: true, yum_install: true, yum_clean_all: true } 
 
 - name: Configure Server All
   hosts: master-worker 
