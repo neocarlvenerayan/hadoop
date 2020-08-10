@@ -1,0 +1,5 @@
+# make ansible no ssh password
+sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no db.test014.org
+sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode1.test014.org
+sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode2.test014.org
+sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode3.test014.org
