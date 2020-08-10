@@ -1,9 +1,5 @@
 ---
 
-# for linux domain user
-
-- include_vars: "{{env}}.yml"
-
 - name: Create .ssh folder if not exist TO ALL
   shell: sudo su - '{{adnetbios}}\{{user1}}' -c '[ -f ~/.ssh ] && echo .SSH-ALREADY-EXIST||mkdir -p ~/.ssh && chmod 0700 ~/.ssh'   
     
