@@ -4,6 +4,6 @@
   become: true
   any_errors_fatal: True
   roles:
-    - { role: common, download_repo: true }
-    - { role: common, add_ip: true }
+    #- { role: common, download_repo: true }
+    #- { role: common, add_ip: true }
     - { role: common, add_ldap: true }
