@@ -9,8 +9,6 @@ owner_file: root
 group_file: root
 mode_file: 0750   
 mode_folder: 0750  
-artifactslist:
-    - { url: '{{download_url}}', name: 'pbis-open-9.1.0.551.linux.x86_64.rpm.sh' }  
 network_list:
   - { ip: "{{hostvars[groups['master'][0]].ansible_host}}", server: "{{hostvars[groups['master'][0]].inventory_hostname.split('.')[0]}}", fqdn: "{{hostvars[groups['master'][0]].inventory_hostname}}" }
   - { ip: "{{hostvars[groups['worker1'][0]].ansible_host}}", server: "{{hostvars[groups['worker1'][0]].inventory_hostname.split('.')[0]}}", fqdn: "{{hostvars[groups['worker1'][0]].inventory_hostname}}" }
