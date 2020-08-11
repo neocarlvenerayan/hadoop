@@ -1,15 +1,13 @@
 ---
 
-#- include_tasks: ambari_blueprint_master.yml
-
 - name: Copy blueprint
   copy:
-    src: '{{env}}/blueprint.json'
+    src: 'blueprint.json'
     dest: /tmp/blueprint.json    
 
 - name: create clustertemplate json
   template:
-    src: '{{env}}/clustertemplate.j2'
+    src: 'clustertemplate.j2'
     dest: /tmp/clustertemplate.json
     owner: root
 
