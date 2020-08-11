@@ -1,14 +1,18 @@
 gpcheck: 1
 gpkey_url: "http://{{hostrepo}}/repo/ambari/RPM-GPG-KEY-Jenkins"
 clustername: "hadoop{{env}}" 
-deleterepo: false
-extract_repo: false
-artifacts_dest: "/tmp/pbis-open/"
+deleterepo: true
+extract_repo: true
+artifacts_dest: "{{postgres_java_rootfolder}}"
 create_dest: true 
 owner_file: root
 group_file: root
-mode_file: 0750   
-mode_folder: 0750  
+mode_file: 0755      
+owner_folder: root
+group_folder: root
+mode_folder: 0755      
+artifactslist:
+    - { url: '{{download_url}}', name: 'jdk-8u112-linux-x64.tar.gz', folder: '{{postgres_java_folder}}' }  
 network_list:
   - { ip: "{{hostvars[groups['master'][0]].ansible_host}}", server: "{{hostvars[groups['master'][0]].inventory_hostname.split('.')[0]}}", fqdn: "{{hostvars[groups['master'][0]].inventory_hostname}}" }
   - { ip: "{{hostvars[groups['worker1'][0]].ansible_host}}", server: "{{hostvars[groups['worker1'][0]].inventory_hostname.split('.')[0]}}", fqdn: "{{hostvars[groups['worker1'][0]].inventory_hostname}}" }
