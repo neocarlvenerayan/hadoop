@@ -1,28 +1,18 @@
+# cluster
 
-###########################
-## cluster configuration ##
-###########################
+clustername: 'hadoopcluster1'
+ambari_version: '2.7.4.0'                                 
+hdp_version: '3.1.4.0'                                    
+hdp_build_number: 'auto'                                 
+hdf_version: '3.4.1.1'
+hdf_build_number: 'auto'
+hdpsearch_version: '4.0.0'
+hdpsearch_build_number: '400'
+repo_base_url: "http://{{hostvars[groups['yum'][0]].inventory_hostname}}"     
 
-cluster_name: 'hadoop1'
+# global variables       
 
-ambari_version: '2.7.4.0'                                 # must be the 4-part full version number
-
-hdp_version: '3.1.4.0'                                    # must be the 4-part full version number
-hdp_build_number: 'auto'                                  # the HDP build number from docs.hortonworks.com (if set to 'auto', Ansible will try to get it from the repository)
-
-hdf_version: '3.4.1.1'                                    # must be the 4-part full version number
-hdf_build_number: 'auto'                                  # the HDF build number from docs.hortonworks.com (if set to 'auto', Ansible will try to get it from the repository)
-
-hdpsearch_version: '4.0.0'                                # must be the full version number
-hdpsearch_build_number: '400'                             # the HDP Search build number from docs.hortonworks.com
-
-repo_base_url: "http://{{hostvars[groups['yum'][0]].inventory_hostname}}"     # change this if using a Local Repository
-
-#############################
-### global variables       ##
-#############################
-
-default_password: ################### 
+default_password: 
 cloud: onprem
 env: dev
 ad_domain: "{{hostvars[groups['master'][0]].inventory_hostname.split('.')[1]|upper}}.{{hostvars[groups['master'][0]].inventory_hostname.split('.')[2]|upper}}"
@@ -32,24 +22,20 @@ adnetbios: "{{ad_domain.split('.')[0]}}"
 ad_server: dc1
 ad_admin_user: administrator
 ad_admin_password: '{{default_password}}'
-dns_name1: 192.168.99.10 
-download_url: 'http://192.168.99.10/' 
+dns_name1: 192.168.99.10 # AD server
+download_url: 'http://192.168.99.10/' # download binaries URL 
 hadoop_subnet: "{{dns_name1.split('.')[0]}}.{{dns_name1.split('.')[1]}}.{{dns_name1.split('.')[2]}}.0"
-hadoop_admin: admin  # ad OU delegate
-hadoop_group: admins # ad group of admin
+hadoop_admin: admin  # AD OU delegate
+hadoop_group: admins # AD group of admin
 u_mask: "022"
 
-###########################
-## general configuration ##
-###########################
+# general configuration 
 
 external_dns: yes                                         # set to yes to use the existing DNS (when no, it will update the /etc/hosts file - must be set to 'no' when using Azure)
 disable_firewall: yes                                      # set to yes to disable the existing local firewall service (iptables, firewalld, ufw)
 timezone: 'UTC -5'
 
-########################
-## java configuration ##
-########################
+# java configuration ##
 
 java: 'embedded'                                          # can be set to 'embedded', 'openjdk' or 'oraclejdk'
 oraclejdk_options:                                        # only used when java is set to 'oraclejdk'
@@ -58,10 +44,7 @@ oraclejdk_options:                                        # only used when java 
   jce_location: '/tmp/jce_policy-8.zip'                   # the location of the JCE package on the remote system or on the Ansible controller
   remote_files: no                                        # set to yes to indicate the files are already on the remote systems, otherwise they will be copied by Ansible from the Ansible controller
 
-
-############################
-## database configuration ##
-############################
+## database configuration
 
 database: 'postgres'                                      # can be set to 'embedded', 'postgres', 'mysql' or 'mariadb'
 database_options:
@@ -78,9 +61,7 @@ database_options:
   ranger_db_password: '{{ default_password }}'
 
 
-#####################################
-## kerberos security configuration ##                     # useful if blueprint is dynamic, but can also be used to deploy the MIT KDC
-#####################################
+## kerberos security configuration                    # useful if blueprint is dynamic, but can also be used to deploy the MIT KDC
 
 security: 'none'                                          # can be set to 'none', 'mit-kdc', 'ipa' or 'active-directory'
 security_options:
@@ -95,9 +76,7 @@ security_options:
   manage_krb5_conf: yes                                   # set to no if using FreeIPA/IdM
 
 
-##########################
-## ranger configuration ##                                # only useful if blueprint is dynamic
-##########################
+## ranger configuration                               # only useful if blueprint is dynamic
 
 ranger_options:                                           # only used if RANGER_ADMIN is part of the blueprint stack
   enable_plugins: yes                                     # set to 'yes' if the plugins should be enabled for all of the installed services
@@ -108,9 +87,7 @@ ranger_security_options:                                  # only used if RANGER_
   kms_master_key_password: "{{ default_password }}"       # password used for encrypting the Master Key
 
 
-##################################
-## other security configuration ##                        # only useful if blueprint is dynamic
-##################################
+## other security configuration                       # only useful if blueprint is dynamic
 
 ambari_admin_password: 'admin'                            # the password for the Ambari admin user
 
@@ -141,9 +118,7 @@ accumulo_security_options:
   trace_password: "{{ default_password }}"                # password for the trace user
 
 
-##########################
-## ambari configuration ##
-##########################
+## ambari configuration
 
 ambari_admin_user: 'admin'
 ambari_admin_default_password: 'admin'                    # no need to change this (unless the Ambari default changes)
@@ -160,18 +135,16 @@ accept_gpl: no                                           # set to yes to allow A
 
 cluster_template_file: 'cluster_template.j2'              # the cluster creation template file
 
+## folders configuration
 
-###########################
-## folders configuration ##
-###########################
 
 base_log_dir: '/var/log'
 base_tmp_dir: '/tmp'
 
 
-#############################
-## blueprint configuration ##
-#############################
+
+## blueprint configuration
+
 
 blueprint_name: '{{ cluster_name }}_blueprint'            # the name of the blueprint as it will be stored in Ambari
 blueprint_file: 'blueprint_dynamic.j2'                    # the blueprint JSON file - 'blueprint_dynamic.j2' is a Jinja2 template that generates the required JSON
@@ -209,30 +182,21 @@ blueprint_dynamic:                                        # properties for the d
       - METRICS_MONITOR
       - HST_AGENT
 
-
-
-############################
-## helper variables ##                                    # don't change these unless there is a good reason
-############################
+## helper variables                                   # don't change these unless there is a good reason
 
 hdp_minor_version: "{{ hdp_version | regex_replace('.[0-9]+.[0-9]+[0-9_-]*$','') }}"
 hdp_major_version: "{{ hdp_minor_version.split('.').0 }}"
 hdf_minor_version: "{{ hdf_version | regex_replace('.[0-9]+.[0-9]+[0-9_-]*$','') }}"
 hdf_major_version: "{{ hdf_minor_version.split('.').0 }}"
-###
+
 utils_version: "{{ '1.1.0.22' if hdp_minor_version is version_compare('2.5', '<') else ('1.1.0.21' if hdp_version is version_compare('2.6.4', '<') else '1.1.0.22' ) }}"
 hdfs_ha_name: "{{ cluster_name | regex_replace('_','-') }}"
 
-#############################
-### advanced configuration ##
-#############################
+### advanced configuration
 
 is_vm_docker_containers: 'no'                             # docker containers have some specifics like mount points for example
 
-
-#############################
-### new variables          ##
-#############################
+## new variables          
 
 max_connections: 200
 postgres_port: 5432
@@ -260,3 +224,6 @@ disk_items:
 passwd1: "{{default_password}}"
 passwd2: vagrant 
 passwd3: "{{default_password}}"
+
+artifactslist:
+    - { url: '{{download_url}}', name: 'pbis-open-9.1.0.551.linux.x86_64.rpm.sh' }  
