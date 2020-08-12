@@ -12,7 +12,6 @@
   roles:
     - { role: common, yum: true, yum_install: true }
     - { role: common, add_kerberos: true }
-  tags: 
 
 - name: Configure java home
   hosts: master-worker
@@ -42,7 +41,9 @@
        - { url: '{{download_url}}', name: "{{ad_cert_name}}", mode_file: 644 }  
     donotexec: true
   roles:
-     - { role: common, yum: true, yum_install: true }
-     - { role: common, download_repo: true }  
-     - { role: pki, setup_cacerts: true }       
-     #- { role: common, add_kerberos_service: true }     
+     #- { role: common, yum: true, yum_install: true }
+     #- { role: common, download_repo: true }  
+     #- { role: pki, setup_cacerts: true }       
+     - { role: common, add_kerberos_service: true }     
+  tags:
+    - test

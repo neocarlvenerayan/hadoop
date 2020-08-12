@@ -1,20 +1,20 @@
 ---
 
-- name: Add the KERBEROS Service to cluster
-  shell: |
-       curl -H "X-Requested-By:ambari" -u admin:admin -i -X POST http://localhost:8080/api/v1/clusters/{{clustername}}/services/KERBEROS
-  args:
-    chdir: /tmp
+# - name: Add the KERBEROS Service to cluster
+#   shell: |
+#        curl -H "X-Requested-By:ambari" -u admin:admin -i -X POST http://localhost:8080/api/v1/clusters/{{clustername}}/services/KERBEROS
+#   args:
+#     chdir: /tmp
     
-- name: Add the KERBEROS_CLIENT component to the KERBEROS service
-  shell: |
-       curl -H "X-Requested-By:ambari" -u admin:admin -i -X POST http://localhost:8080/api/v1/clusters/{{clustername}}/services/KERBEROS/components/KERBEROS_CLIENT
-  args:
-    chdir: /tmp
+# - name: Add the KERBEROS_CLIENT component to the KERBEROS service
+#   shell: |
+#        curl -H "X-Requested-By:ambari" -u admin:admin -i -X POST http://localhost:8080/api/v1/clusters/{{clustername}}/services/KERBEROS/components/KERBEROS_CLIENT
+#   args:
+#     chdir: /tmp
  
 - name: Copy payload1
   copy:
-    src: "{{env}}/payload1"
+    src: "payload1"
     dest: /tmp/payload1
     
 - name: Create and set KERBEROS service configurations
@@ -26,7 +26,7 @@
 
 - name: create kerberos client
   template:
-     src: '{{env}}/kerberosclient.j2'
+     src: 'kerberosclient.j2'
      dest: /tmp/kerberosclient.sh
      owner: root
 
@@ -50,10 +50,10 @@
 
 - name: Copy payload2
   copy:
-    src: '{{env}}/payload2'
+    src: 'payload2'
     dest: /tmp/payload2
     
-- name: Set the Kerberos Descriptor # note you can GET first the payload2 from manual kerberos
+- name: Set the Kerberos Descriptor 
   shell: |
        curl -H "X-Requested-By:ambari" -u admin:admin -i -X POST -d @./payload2 http://localhost:8080/api/v1/clusters/{{clustername}}/artifacts/kerberos_descriptor
   args:
@@ -61,7 +61,7 @@
 
 - name: Copy payload3
   copy:
-    src: '{{env}}/payload3'
+    src: 'payload3'
     dest: /tmp/payload3
     
 - name: Set the KDC administrator credentials
@@ -72,7 +72,7 @@
         
 - name: Copy payload4
   copy:
-    src: '{{env}}/payload4'
+    src: 'payload4'
     dest: /tmp/payload4
     
 - name: Enable Kerberos # error here ???
