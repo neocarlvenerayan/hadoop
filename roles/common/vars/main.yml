@@ -1,14 +1,6 @@
 gpcheck: 1
 gpkey_url: "http://{{hostrepo}}/repo/ambari/RPM-GPG-KEY-Jenkins"
 clustername: "hadoop{{env}}" 
-deleterepo: false
-extract_repo: false
-artifacts_dest: "/tmp/pbis-open/"
-create_dest: true 
-owner_file: root
-group_file: root
-mode_file: 0750   
-mode_folder: 0750  
 network_list:
   - { ip: "{{hostvars[groups['master'][0]].ansible_host}}", server: "{{hostvars[groups['master'][0]].inventory_hostname.split('.')[0]}}", fqdn: "{{hostvars[groups['master'][0]].inventory_hostname}}" }
   - { ip: "{{hostvars[groups['worker1'][0]].ansible_host}}", server: "{{hostvars[groups['worker1'][0]].inventory_hostname.split('.')[0]}}", fqdn: "{{hostvars[groups['worker1'][0]].inventory_hostname}}" }
@@ -29,3 +21,11 @@ soft_no_file: 4096
 hard_no_file: 65536
 soft_nproc: 2047
 hard_nproc: 16384
+deleterepo: false
+extract_repo: false
+artifacts_dest: "/tmp/jce/"
+create_dest: true 
+owner_file: root
+group_file: root
+mode_file: 0755      
+mode_folder: 0755      
