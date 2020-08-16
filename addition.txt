@@ -3,3 +3,29 @@ sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no db.test014.org
 sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode1.test014.org
 sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode2.test014.org
 sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode3.test014.org
+
+#only manual to do on kerberos
+ambari-server setup-security
+ 4
+  y
+  jks
+  /var/lib/ambari-server/keys/ambari-server-truststore.jks
+ --put ur password
+
+ambari-server setup-security
+ 5 
+   y
+   y
+   alias: activedirectory
+   /etc/pki/ca-trust/source/anchors/activedirectory.pem
+
+ambari-server restart
+
+unzip -o -j -q /tmp/jce/jce_policy-8.zip -d /usr/jdk64/jdk1.8.0_112/jre/lib/security/
+
+# restart again
+ambari-server restart
+
+
+## error
+   start on execute kerberos client
