@@ -1,7 +1,5 @@
 ---
 
-# APPLY THIS WHEN AMBARI SERVER IS DOWN???
-
 - name: Copy {{ad_cert_name}} 
   copy:
     src: '{{artifacts_dest}}{{ad_cert_name}}'
@@ -19,43 +17,64 @@
         /usr/bin/keytool -import -file /etc/pki/ca-trust/source/anchors/{{ad_cert_name.split('.')[0]}}.pem \
         -alias ambari-server -keystore ambari-server-truststore -storepass {{ca_cert_pass}} -v -noprompt
       
-- meta: end_play # not working below ONLY MANUAL CLI WORKS ################# ???
+# NOT WORKING BELOW ONLY MANUAL CLI WORKS ################# SEE ADDITION.TXT
 
-- name: create create import cert
-  template:
-    src: create_import_cert.j2
-    dest: /tmp/create_import_cert.sh
-  become_user: root
+# first solution from support below,
 
-- name: exec create import cert 
-  shell: |
-         chmod u+x /tmp/create_import_cert.sh
-         #/tmp/create_import_cert.sh # not working too
-  become_user: root
+# ~~~~~~~~~~~
+# PYTHONPATH=$PYTHONPATH:/usr/lib/ambari-server/lib /usr/sbin/ambari-server.py setup-security \
+# --security-option=setup-truststore \
+# --truststore-path=/var/lib/ambari-server/keys/ambari-server-truststore.jks \
+# --truststore-type=jks --truststore-password=123456
+
+# PYTHONPATH=$PYTHONPATH:/usr/lib/ambari-server/lib /usr/sbin/ambari-server.py setup-security \
+# --security-option=import-certificate \
+# --truststore-path=/var/lib/ambari-server/keys/ambari-server-truststore.jks \
+# --truststore-type=jks \
+# --truststore-password=123456 \
+# --import-cert-path=/etc/pki/ca-trust/source/anchors/activedirectory.pem \
+# --import-cert-alias=activedirectory \
+# --truststore-reconfigure
+# according to support this version have bug on this
+# ~~~~~~~~~~~
+
+# SECOND COMMENT FROM SUPPORT THIS VERSION OF HADOOP 3.1 HAVE BUG
+
+# - name: create create import cert
+#   template:
+#     src: create_import_cert.j2
+#     dest: /tmp/create_import_cert.sh
+#   become_user: root
+
+# - name: exec create import cert 
+#   shell: |
+#          chmod u+x /tmp/create_import_cert.sh
+#          #/tmp/create_import_cert.sh # not working too
+#   become_user: root
    
-- name: Restart ambari-server
-  service:
-    name: ambari-server
-    state: restarted
+# - name: Restart ambari-server
+#   service:
+#     name: ambari-server
+#     state: restarted
 
-- name: Wait for Ambari Server to start listening on port 8080
-  wait_for:
-    port: 8080
-    host: 0.0.0.0
-    delay: 1    
+# - name: Wait for Ambari Server to start listening on port 8080
+#   wait_for:
+#     port: 8080
+#     host: 0.0.0.0
+#     delay: 1    
  
-- name: extract jce policy
-  shell: unzip -o -j -q {{artifacts_dest}}jce_policy-8.zip -d {{postgres_java_rootfolder}}{{postgres_java_folder}}
-  become_user: root
+# - name: extract jce policy
+#   shell: unzip -o -j -q {{artifacts_dest}}jce_policy-8.zip -d {{postgres_java_rootfolder}}{{postgres_java_folder}}
+#   become_user: root
   
-- name: Restart ambari-server
-  service:
-    name: ambari-server
-    state: restarted
+# - name: Restart ambari-server
+#   service:
+#     name: ambari-server
+#     state: restarted
 
-- name: Wait for Ambari Server to start listening on port 8080
-  wait_for:
-    port: 8080
-    host: 0.0.0.0
-    delay: 1    
+# - name: Wait for Ambari Server to start listening on port 8080
+#   wait_for:
+#     port: 8080
+#     host: 0.0.0.0
+#     delay: 1    
   
