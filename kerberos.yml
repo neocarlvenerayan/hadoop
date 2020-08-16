@@ -1,5 +1,5 @@
 - name: Configure kerberos first
-  hosts: worker1
+  hosts: master-worker
   become: true
   any_errors_fatal: True
   vars:
