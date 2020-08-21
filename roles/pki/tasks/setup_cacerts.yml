@@ -17,23 +17,23 @@
         /usr/bin/keytool -import -file /etc/pki/ca-trust/source/anchors/{{ad_cert_name.split('.')[0]}}.pem \
         -alias ambari-server -keystore ambari-server-truststore -storepass {{ca_cert_pass}} -v -noprompt
       
-- name: create truststore
+- name: setup truststore
   shell: |
        PYTHONPATH=$PYTHONPATH:/usr/lib/ambari-server/lib /usr/sbin/ambari-server.py setup-security \
        --security-option=setup-truststore \
-       --truststore-path=/var/lib/ambari-server/keys/cacerts.jks \
-       --truststore-type=jks --truststore-password=123456
+       --truststore-path={{ca_cert_path}} \
+       --truststore-type={{ca_cert_type}} --truststore-password={{ca_cert_pass}}
   become_user: root
 
 - name: import truststore
   shell: |
        PYTHONPATH=$PYTHONPATH:/usr/lib/ambari-server/lib /usr/sbin/ambari-server.py setup-security \
        --security-option=import-certificate \
-       --truststore-path=/var/lib/ambari-server/keys/cacerts.jks \
-       --truststore-type=jks \
-       --truststore-password=123456 \
-       --import-cert-path=/etc/pki/ca-trust/source/anchors/activedirectory.pem \
-       --import-cert-alias=activedirectory \
+       --truststore-path={{ca_cert_path}} \
+       --truststore-type={{ca_cert_type}} \
+       --truststore-password={{ca_cert_pass}} \
+       --import-cert-path={{ca_cert_ad}} \
+       --import-cert-alias={{ca_cert_alias}} \
        --truststore-reconfigure
   become_user: root
 
@@ -48,8 +48,8 @@
     host: 0.0.0.0
     delay: 1    
  
-- name: extract jce policy ##### got error on artifacts_dest
-  shell: unzip -o -j -q {{artifacts_dest}}jce_policy-8.zip -d {{postgres_java_rootfolder}}{{postgres_java_folder}}
+- name: extract jce policy 
+  shell: "unzip -o -j -q {{artifacts_dest}}jce_policy-8.zip -d {{postgres_java_rootfolder}}{{postgres_java_folder}}/jre/lib/security/"
   become_user: root
   
 - name: Restart ambari-server

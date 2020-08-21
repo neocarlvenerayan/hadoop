@@ -5,7 +5,7 @@ ambari_ssl_port: 8443
 # self
 
 # selfsigned keystore and truststore password
-cert_password: 123456 #"{{default_password}}" ???
+cert_password: 123456 
 cert_ou: IT
 cert_o: "{{adnetbios|lower}}"
 cert_l: etobicoke
@@ -28,3 +28,8 @@ multi_alias: gateway-identity
 ca_cert_pass: "{{cert_password}}"
 ca_cert_type: jks
 ca_cert_path: /var/lib/ambari-server/keys/cacerts.jks
+ca_cert_ad: "/etc/pki/ca-trust/source/anchors/{{ad_cert_name.split('.')[0]}}.pem"
+ca_cert_alias: "{{ad_cert_name.split('.')[0]}}"
+
+artifacts_dest: "/tmp/jce/"
+
