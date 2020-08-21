@@ -1,5 +1,8 @@
 {
   "Clusters": {
-    "security_type" : "KERBEROS"
+    "cluster_name" : "hadoopdev",
+    "security_type" : "KERBEROS",
+    "total_hosts" : 3,
+    "version" : "HDP-3.1"
   }
 }

@@ -75,15 +75,15 @@
     src: 'payload4'
     dest: /tmp/payload4
     
-- name: Enable Kerberos # error here ???
-  shell: |
-       curl -H "X-Requested-By:ambari" -u admin:admin -i -X POST -d @./payload4 http://localhost:8080/api/v1/clusters/{{clustername}}
-  args:
-    chdir: /tmp 
+# - name: Enable Kerberos # error here ???
+#   shell: |
+#        curl -H "X-Requested-By:ambari" -u admin:admin -i -X POST -d @./payload4 http://localhost:8080/api/v1/clusters/{{clustername}}
+#   args:
+#     chdir: /tmp 
                 
-- name: Start all services
-  shell: |
-       curl -H "X-Requested-By:ambari" -u admin:admin -i -X PUT -d '{"ServiceInfo": {"state" : "STARTED"}}' http://localhost:8080/api/v1/clusters/{{clustername}}/services
-  args:
-    chdir: /tmp 
+# - name: Start all services
+#   shell: |
+#        curl -H "X-Requested-By:ambari" -u admin:admin -i -X PUT -d '{"ServiceInfo": {"state" : "STARTED"}}' http://localhost:8080/api/v1/clusters/{{clustername}}/services
+#   args:
+#     chdir: /tmp 
                                 
