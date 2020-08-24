@@ -1,41 +1,41 @@
-# - name: CREATE POSTGRES DB create_db_postgres=true
-#   hosts: sql
-#   any_errors_fatal: true
-#   become: true  
-#   roles:
-#     - { role: postgres, create_postgres_db: true, create_db_postgres: true }
+- name: CREATE POSTGRES DB create_db_postgres=true
+  hosts: sql
+  any_errors_fatal: true
+  become: true  
+  roles:
+    - { role: postgres, create_postgres_db: true, create_db_postgres: true }
   
 - name: RECREATE POSTGRES DB create_db_postgres=false
   hosts: sql
   any_errors_fatal: true
   become: true  
   roles:
-    - { role: postgres, create_postgres_db: true, create_db_postgres: true }
+    - { role: postgres, create_postgres_db: true, create_db_postgres: false }
       
-# - name: Apply the ambari jdk for postgres 
-#   hosts: master-worker
-#   any_errors_fatal: true
-#   become: true
-#   roles:
-#     - { role: common, download_repo: true }
+- name: Apply the ambari jdk for postgres 
+  hosts: master-worker
+  any_errors_fatal: true
+  become: true
+  roles:
+    - { role: common, download_repo: true }
      
-# - name: Apply the ambari-server permission
-#   hosts: master
-#   any_errors_fatal: true
-#   become: true
-#   roles:
-#     - { role: ambari, ambari_setup_permission: true  }
+- name: Apply the ambari-server permission
+  hosts: master
+  any_errors_fatal: true
+  become: true
+  roles:
+    - { role: ambari, ambari_setup_permission: true  }
   
-# - name: Apply the ambari-server setup for Postgres
-#   hosts: master
-#   any_errors_fatal: true
-#   become: true
-#   roles:
-#     - { role: ambari, ambari_setup_postgres: true  }
+- name: Apply the ambari-server setup for Postgres
+  hosts: master
+  any_errors_fatal: true
+  become: true
+  roles:
+    - { role: ambari, ambari_setup_postgres: true  }
     
-# - name: Restart ambari-agent
-#   hosts: master-worker
-#   any_errors_fatal: true
-#   become: true
-#   roles:
-#     - { role: ambari, ambari_agent_restart: true  }
+- name: Restart ambari-agent
+  hosts: master-worker
+  any_errors_fatal: true
+  become: true
+  roles:
+    - { role: ambari, ambari_agent_restart: true  }
