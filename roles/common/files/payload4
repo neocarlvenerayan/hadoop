@@ -1,4 +1,10 @@
 {
+  "session_attributes" : {
+    "kerberos_admin" : {
+      "principal" : "root/admin@TEST014.ORG",
+      "password" : "Clark@12345!"
+    }
+  },
   "Clusters": {
     "security_type" : "KERBEROS"
   }
