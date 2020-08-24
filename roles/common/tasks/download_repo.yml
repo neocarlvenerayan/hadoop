@@ -18,7 +18,7 @@
   retries: 10
   delay: 10
   until: x is not failed  
-  when: donotexec|default(False)==True    
+  when: donotexec|default(True)==True    
           
 - name: Unarchive file
   unarchive:
