@@ -37,5 +37,3 @@
      - { role: common, download_repo: true }  
      - { role: pki, setup_cacerts: true }       
      - { role: common, add_kerberos_service: true }     
-  tags:
-    - test
