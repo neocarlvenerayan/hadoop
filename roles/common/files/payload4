@@ -1,7 +1,7 @@
 {
   "session_attributes" : {
     "kerberos_admin" : {
-      "principal" : "admin@TEST014.ORG",
+      "principal" : "root/admin@TEST014.ORG",
       "password" : "Clark@12345!"
     }
   },
