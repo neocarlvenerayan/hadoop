@@ -58,10 +58,10 @@ includedir /etc/krb5.conf.d/
 
 kdb5_util create -P {{default_password}} -s
 
-echo 'admin@{{ad_domain}} *' > /var/kerberos/krb5kdc/kadm5.acl
+echo '*/admin@{{ad_domain}} *' > /var/kerberos/krb5kdc/kadm5.acl
 sed -i 's/EXAMPLE.COM/{{ad_domain}}/g' /var/kerberos/krb5kdc/kdc.conf 
 
-kadmin.local -q "addprinc -pw {{default_password}} admin@{{ad_domain}}"
+kadmin.local -q "addprinc -pw {{default_password}} root/admin@{{ad_domain}}"
 
 # add user keyadmin for Ranger KMS, not needed yet ???
 kadmin.local -q 'addprinc -pw keyadmin keyadmin'
