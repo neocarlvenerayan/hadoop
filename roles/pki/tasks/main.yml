@@ -17,4 +17,6 @@
     
 - include_tasks: setup_cacerts.yml
   when: setup_cacerts|default(False)==True                    
-                  
+
+- include_tasks: setup_cacerts_agent.yml
+  when: setup_cacerts_agent|default(False)==True                    

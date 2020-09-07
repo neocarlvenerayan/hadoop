@@ -1,0 +1,33 @@
+---
+
+- name: Copy {{ad_cert_name}} 
+  copy:
+    src: '{{artifacts_dest}}{{ad_cert_name}}'
+    dest: "/etc/pki/ca-trust/source/anchors/{{ad_cert_name.split('.')[0]}}.pem"
+    remote_src: yes
+    
+- name: update ca 
+  shell: |
+        update-ca-trust force-enable
+        update-ca-trust extract 
+        update-ca-trust check
+          
+- name: import cert 
+  shell: |
+        /usr/bin/keytool -import -file /etc/pki/ca-trust/source/anchors/{{ad_cert_name.split('.')[0]}}.pem \
+        -alias ambari-server -keystore ambari-server-truststore -storepass {{ca_cert_pass}} -v -noprompt
+      
+- name: Restart ambari-agent
+  service:
+    name: ambari-agent
+    state: restarted
+ 
+- name: extract jce policy 
+  shell: "unzip -o -j -q {{artifacts_dest}}jce_policy-8.zip -d {{postgres_java_rootfolder}}{{postgres_java_folder}}/jre/lib/security/"
+  become_user: root
+  
+- name: Restart ambari-agent
+  service:
+    name: ambari-agent
+    state: restarted
+  

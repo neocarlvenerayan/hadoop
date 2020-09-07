@@ -36,4 +36,22 @@
      - { role: common, yum: true, yum_install: true }
      - { role: common, download_repo: true }  
      - { role: pki, setup_cacerts: true }       
-     #- { role: common, add_kerberos_service: true }     
+     - { role: common, add_kerberos_service: true }     
+
+# - name: Configure kerberos agent
+#   hosts: worker
+#   any_errors_fatal: true
+#   become: true
+#   vars:
+#     rhel_7:
+#        - ca-certificates
+#     ad_cert_name: 'activedirectory.cer' 
+#     artifactslist:
+#        - { url: '{{download_url}}', name: "jce_policy-8.zip" }  
+#        - { url: '{{download_url}}', name: "{{ad_cert_name}}", mode_file: 644 }  
+#     donotexec: true
+#   roles:
+#      - { role: common, yum: true, yum_install: true }
+#      - { role: common, download_repo: true }  
+#      - { role: pki, setup_cacerts_agent: true }  
+          
