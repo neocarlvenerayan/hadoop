@@ -78,3 +78,7 @@
   
 - include_tasks: createrepo.yml
   when: createrepo|default(False)==True 
+
+- include_tasks: kinit_admin.yml
+  when: kinit_admin|default(False)==True 
+  
