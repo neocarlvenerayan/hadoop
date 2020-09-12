@@ -39,5 +39,3 @@
       sudo su - 'TEST014\admin' -c 'for i in hdnode1;do ssh -qxn $i "kinit -kt ams-monitor.keytab amsmon/hdnode1.test014.org@TEST014.ORG";done'
       sudo su - 'TEST014\admin' -c 'for i in hdnode2;do ssh -qxn $i "kinit -kt ams-monitor.keytab amsmon/hdnode2.test014.org@TEST014.ORG";done'
       sudo su - 'TEST014\admin' -c 'for i in hdnode3;do ssh -qxn $i "kinit -kt ams-monitor.keytab amsmon/hdnode3.test014.org@TEST014.ORG";done'
-
-      #sudo su - 'TEST014\admin' -c 'for i in hdnode1 hdnode2 hdnode3;do ssh -qxn $i "hdfs dfs -ls /";done'
