@@ -2,7 +2,7 @@
 
 - name: kinit admin
   shell: |
-      sleep 45
+      sleep 60
       sudo su - 'TEST014\admin' -c 'for i in hdnode1 hdnode2 hdnode3;do ssh -qxn $i "sudo cp -p /etc/security/keytabs/*.keytab .";done'
       sudo su - 'TEST014\admin' -c 'for i in hdnode1 hdnode2 hdnode3;do ssh -qxn $i "sudo chown admin@TEST014.ORG *.keytab";done'
       sudo su - 'TEST014\admin' -c 'for i in hdnode1 hdnode2 hdnode3;do ssh -qxn $i "kinit -kt hdfs.headless.keytab hdfs-hadoopdev@TEST014.ORG";done'
@@ -36,6 +36,11 @@
       sudo su - 'TEST014\admin' -c 'for i in hdnode1; do ssh -qxn $i "kinit -kt yarn.service.keytab yarn/hdnode1.test014.org@TEST014.ORG";done'
       sudo su - 'TEST014\admin' -c 'for i in hdnode2; do ssh -qxn $i "kinit -kt yarn.service.keytab yarn/hdnode2.test014.org@TEST014.ORG";done'
       sudo su - 'TEST014\admin' -c 'for i in hdnode1;do ssh -qxn $i "kinit -kt ambari.server.keytab ambari-server-hadoopdev@TEST014.ORG";done'
-      sudo su - 'TEST014\admin' -c 'for i in hdnode1;do ssh -qxn $i "kinit -kt ams-monitor.keytab amsmon/hdnode1.test014.org@TEST014.ORG";done'
-      sudo su - 'TEST014\admin' -c 'for i in hdnode2;do ssh -qxn $i "kinit -kt ams-monitor.keytab amsmon/hdnode2.test014.org@TEST014.ORG";done'
-      sudo su - 'TEST014\admin' -c 'for i in hdnode3;do ssh -qxn $i "kinit -kt ams-monitor.keytab amsmon/hdnode3.test014.org@TEST014.ORG";done'
+      sudo su - 'TEST014\admin' -c 'for i in hdnode2;do ssh -qxn $i "kinit -kt activity-analyzer.headless.keytab activity_analyzer/hdnode2.test014.org@TEST014.ORG";done'
+      sudo su - 'TEST014\admin' -c 'for i in hdnode2;do ssh -qxn $i "kinit -kt activity-explorer.headless.keytab activity_explorer/hdnode2.test014.org@TEST014.ORG";done'
+      sudo su - 'TEST014\admin' -c 'for i in hdnode2;do ssh -qxn $i "kinit -kt rm.service.keytab rm/hdnode2.test014.org@TEST014.ORG";done'
+      sudo su - 'TEST014\admin' -c 'for i in hdnode3; do ssh -qxn $i "kinit -kt ams.collector.keytab amshbase/hdnode3.test014.org@TEST014.ORG";done'
+      sudo su - 'TEST014\admin' -c 'for i in hdnode3; do ssh -qxn $i "kinit -kt ams-hbase.master.keytab amshbase/hdnode3.test014.org@TEST014.ORG";done'
+      sudo su - 'TEST014\admin' -c 'for i in hdnode3; do ssh -qxn $i "kinit -kt ams-hbase.regionserver.keytab amshbase/hdnode3.test014.org@TEST014.ORG";done'
+      sudo su - 'TEST014\admin' -c 'for i in hdnode3; do ssh -qxn $i "kinit -kt ams-zk.service.keytab amszk/hdnode3.test014.org@TEST014.ORG";done'
+      sudo su - 'TEST014\admin' -c 'for i in hdnode3; do ssh -qxn $i "kinit -kt ams-zk.service.keytab amszk/hdnode3.test014.org@TEST014.ORG";done'
