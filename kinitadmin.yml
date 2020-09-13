@@ -1,0 +1,6 @@
+- name: kinit admin
+  hosts: master
+  any_errors_fatal: true
+  become: true
+  roles:
+     - { role: common, kinit_admin: true }     
