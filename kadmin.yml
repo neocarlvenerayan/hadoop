@@ -1,3 +1,5 @@
+---
+
 - name: kinit admin
   hosts: master
   any_errors_fatal: true

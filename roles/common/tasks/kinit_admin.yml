@@ -1,8 +1,8 @@
 ---
 
-- name: kinit admin
-  shell: |
-      sleep 60
+- name: delay 1 min
+  pause:
+      minutes: 1
   when: delays|default(True)==True
 
 - name: kinit admin

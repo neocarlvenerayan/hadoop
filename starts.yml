@@ -1,0 +1,11 @@
+---
+
+- name: start services
+  hosts: master
+  any_errors_fatal: true
+  become: true
+  vars:
+     delays: false
+  roles:
+     - { role: common, start_services: true }     
+     - { role: common, kinit_admin: true }   
