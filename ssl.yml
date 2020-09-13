@@ -39,3 +39,6 @@
     - { role: ambari, ambari_server_start: true }
     - { role: common, start_services: true } 
     - { role: common, kinit_admin: true }     
+    - { role: common, delays: true }     
+    - { role: common, start_services: true } 
+    - { role: common, kinit_admin: true }     
