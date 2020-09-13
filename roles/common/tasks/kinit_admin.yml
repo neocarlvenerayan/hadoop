@@ -1,7 +1,7 @@
 
 - name: kinit admin
   shell: |
-      sleep 6
+      sleep 10
       sudo su - 'TEST014\admin' -c 'for i in hdnode1 hdnode2 hdnode3;do ssh -qxn $i "sudo cp -p /etc/security/keytabs/*.keytab .";done'
       sudo su - 'TEST014\admin' -c 'for i in hdnode1 hdnode2 hdnode3;do ssh -qxn $i "sudo chown admin@TEST014.ORG *.keytab";done'
       sudo su - 'TEST014\admin' -c 'for i in hdnode1 hdnode2 hdnode3;do ssh -qxn $i "kinit -kt hdfs.headless.keytab hdfs-hadoopdev@TEST014.ORG";done'

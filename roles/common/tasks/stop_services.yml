@@ -9,5 +9,5 @@
   args: 
      chdir: /tmp
 
- - pause: 
+- pause: 
       minutes: 4     

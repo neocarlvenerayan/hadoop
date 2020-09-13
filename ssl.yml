@@ -41,7 +41,8 @@
   any_errors_fatal: true
   become: true
   roles:
-    - { role: common, start_services: true } 
+    - { role: common, start_services: true } # start services will not really occur if you do not do start services in kerberos
+                                             # need to do it manual start from gui
 
 - name: kinit admin
   hosts: master
