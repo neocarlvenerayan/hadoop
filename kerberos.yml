@@ -54,4 +54,4 @@
      - { role: common, download_repo: true }  
      - { role: pki, setup_cacerts: true }       
      - { role: common, add_kerberos_service: true }     
-     - { role: common, kinit_admin: true, when: starts|default(True)==True }     
+     - { role: common, kinit_admin: true, when: starts|default(True)=='True' }  # start false is when do not want to start services   
