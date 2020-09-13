@@ -1,0 +1,7 @@
+---
+
+- name: Start all services
+  shell: |
+       curl -H "X-Requested-By:ambari" -u admin:admin -i -k -O -X PUT -d '{"ServiceInfo": {"state" : "STARTED"}}' https://localhost:8443/api/v1/clusters/{{clustername}}/services
+  args:
+    chdir: /tmp 

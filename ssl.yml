@@ -35,3 +35,17 @@
   become: true
   roles:
     - { role: ambari, ambari_server_start: true }
+
+- name: start services
+  hosts: master
+  any_errors_fatal: true
+  become: true
+  roles:
+    - { role: common, start_services: true } 
+
+- name: kinit admin
+  hosts: master
+  any_errors_fatal: true
+  become: true
+  roles:
+     - { role: common, kinit_admin: true }     

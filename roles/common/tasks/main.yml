@@ -82,3 +82,9 @@
 
 - include_tasks: stop_services.yml
   when: stop_services|default(False)==True 
+
+- include_tasks: kinit_admin.yml
+  when: kinit_admin|default(False)==True 
+
+- include_tasks: start_services.yml
+  when: start_services|default(False)==True   
