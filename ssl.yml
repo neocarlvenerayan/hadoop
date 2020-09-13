@@ -1,4 +1,10 @@
-
+- name: stop services
+  hosts: master
+  any_errors_fatal: true
+  become: true
+  roles:
+    - { role: common, stop_services: true } 
+      
 - name: Download the cert
   hosts: master
   any_errors_fatal: true

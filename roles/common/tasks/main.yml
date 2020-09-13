@@ -79,4 +79,6 @@
   
 - include_tasks: createrepo.yml
   when: createrepo|default(False)==True 
-  
+
+- include_tasks: stop_services.yml
+  when: stop_services|default(False)==True 

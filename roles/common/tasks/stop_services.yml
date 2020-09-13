@@ -1,0 +1,13 @@
+---
+
+- pause: 
+     minutes: 12     
+
+- name: Stop all services
+  shell: |
+        curl -H "X-Requested-By:ambari" -u admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Stop Service"},"Body":{"ServiceInfo":{"state":"INSTALLED"}}}' http://localhost:8080/api/v1/clusters/{{clustername}}/services
+  args: 
+     chdir: /tmp
+
+ - pause: 
+      minutes: 4     
