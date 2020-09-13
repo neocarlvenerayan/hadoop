@@ -38,6 +38,8 @@
 - name: join to domain
   shell: '/opt/pbis/bin/domainjoin-cli join {{ad_domain}} {{ad_admin_user}} {{ad_admin_password}}'
   register: x
+  until: x is not failed
+  retries: 3  
 
 - name: reboot when needed
   reboot:
