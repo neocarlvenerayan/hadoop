@@ -3,6 +3,9 @@
 - name: First login OF AD user 
   shell: sudo su - '{{adnetbios}}\{{user1}}' -c 'whoami'
   when: adnetbios|trim != ""  
+  register: x
+  until: x is not failed
+  retries: 3  
   
 - name: Set user to umask
   lineinfile:
