@@ -42,4 +42,5 @@
       sudo su - 'TEST014\admin' -c 'for i in hdnode3; do ssh -qxn $i "kinit -kt ams-hbase.master.keytab amshbase/hdnode3.test014.org@TEST014.ORG";done'
       sudo su - 'TEST014\admin' -c 'for i in hdnode3; do ssh -qxn $i "kinit -kt ams-hbase.regionserver.keytab amshbase/hdnode3.test014.org@TEST014.ORG";done'
       sudo su - 'TEST014\admin' -c 'for i in hdnode3; do ssh -qxn $i "kinit -kt ams-zk.service.keytab amszk/hdnode3.test014.org@TEST014.ORG";done'
+      sudo su - 'TEST014\admin' -c 'for i in hdnode1 hdnode2 hdnode3; do ssh -qxn $i "hdfs dfs -ls /";done'
       
