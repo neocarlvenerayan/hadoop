@@ -6,4 +6,4 @@
   become: true
   roles:
      - { role: common, start_services: true } 
-     - { role: common, kinit_admin: true }     
+     - { role: common, kinit_admin: true, secs: 30 }     
