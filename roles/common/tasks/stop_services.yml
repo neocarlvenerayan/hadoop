@@ -1,6 +1,7 @@
 ---
 
-- pause: 
+- name: pause before stopping all services
+  pause: 
      minutes: 12     
 
 - name: Stop all services
@@ -10,4 +11,4 @@
      chdir: /tmp
 
 - pause: 
-      minutes: 4     
+      minutes: 6     

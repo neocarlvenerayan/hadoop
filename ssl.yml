@@ -1,3 +1,5 @@
+---
+
 - name: stop services
   hosts: master
   any_errors_fatal: true
@@ -29,24 +31,11 @@
   roles:
     - { role: ambari, ambari_agent_restart: true }
 
-- name: Restart ambari-server
+- name: Restart ambari-server, start services, kinitadmin
   hosts: master
   any_errors_fatal: true
   become: true
   roles:
     - { role: ambari, ambari_server_start: true }
-
-- name: start services
-  hosts: master
-  any_errors_fatal: true
-  become: true
-  roles:
-    - { role: common, start_services: true } # start services will not really occur if you do not do start services in kerberos
-                                             # need to do it manual start from gui
-
-- name: kinit admin
-  hosts: master
-  any_errors_fatal: true
-  become: true
-  roles:
-     - { role: common, kinit_admin: true }     
+    - { role: common, start_services: true } 
+    - { role: common, kinit_admin: true }     
