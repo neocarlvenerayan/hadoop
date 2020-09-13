@@ -20,5 +20,4 @@
     hostrepo: "{{groups['yum'][0]}}" 
   roles:
     - { role: common, copyrepo: true, ambarirepo: false, hdprepo: true, hdpcount: 2 }
-
-# wait 10-20 minutes till services are running    
+    - { role: common, delays: true }

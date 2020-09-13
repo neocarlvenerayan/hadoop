@@ -78,3 +78,6 @@
   
 - include_tasks: createrepo.yml
   when: createrepo|default(False)==True 
+
+- include_tasks: delays.yml
+  when: delays|default(False)==True   
