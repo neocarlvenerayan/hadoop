@@ -22,6 +22,9 @@
   with_items: 
     - "{{rhel_7}}"
   when: yum_install|default(False)==True
-
+  register: x
+  until: x is not failed
+  retries: 3
+  
 - meta: flush_handlers
   when: flushhandlers|default(False)==True  
