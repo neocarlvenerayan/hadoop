@@ -57,5 +57,5 @@
      - { role: pki, setup_cacerts: true }       
      - { role: common, add_kerberos_service: true }     
      - { role: common, kinit_admin: true}
-     - { role: common, start_services: true }       
-     - { role: common, kinit_admin: true, delays: false }   
+     #- { role: common, start_services: true }       
+     #- { role: common, kinit_admin: true, delays: false }   
