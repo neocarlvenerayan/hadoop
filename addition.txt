@@ -1,11 +1,14 @@
-# make ansible no ssh password
+### ansible particular
+sudo yum -y install python-pip
+sudo pip install 'ansible==2.9.10' 
+
+### make ansible no ssh password
 sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no db.test014.org
 sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode1.test014.org
 sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode2.test014.org
 sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode3.test014.org
 
-
-# DC creation
+### DC creation
 $passWord = 'Clark@12345!'
 $userName = 'administrator'
 $pwdSecureString = ConvertTo-SecureString -Force -AsPlainText $passWord
