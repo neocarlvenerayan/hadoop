@@ -10,7 +10,7 @@
 
 - name: Run Ambari-server setup 
   shell: |
-       ambari-server setup --databasehost=db.test014.org  --databasename=ambari  --databaseusername=ambari --oraclechema=PDDFPU2  --databasepassword=ambari --databaseport=5432 --database={{database}}  -s
+       ambari-server setup --databasehost=db.adtest07.org  --databasename=ambari  --databaseusername=ambari --oraclechema=PDDFPU2  --databasepassword=ambari --databaseport=5432 --database={{database}}  -s
   notify: Restart ambari-server
  
 - meta: end_play
