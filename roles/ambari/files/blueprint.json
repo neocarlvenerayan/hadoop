@@ -261,7 +261,7 @@
                     "fs.gs.application.name.suffix": " (GPN:Hortonworks; version 1.0) HDP/{{version}}",
                     "ha.failover-controller.active-standby-elector.zk.op.retries": "120",
                     "hadoop.http.cross-origin.allowed-headers": "X-Requested-With,Content-Type,Accept,Origin,WWW-Authenticate,Accept-Encoding,Transfer-Encoding",
-                    "hadoop.proxyuser.ambari.hosts": "hdnode1.test014.org",
+                    "hadoop.proxyuser.ambari.hosts": "hdnode1.adtest07.org",
                     "hadoop.security.authentication": "simple",
                     "fs.s3a.fast.upload.buffer": "disk",
                     "hadoop.proxyuser.hdfs.hosts": "*",
@@ -676,7 +676,7 @@
                     "gateway.host": "embedded",
                     "server.port": "9000",
                     "server.tmp.dir": "/var/lib/smartsense/hst-server/tmp",
-                    "server.url": "http://hdnode1.test014.org:9000",
+                    "server.url": "http://hdnode1.adtest07.org:9000",
                     "customer.smartsense.id": "unspecified"
                 }
             }
