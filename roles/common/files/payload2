@@ -2079,7 +2079,7 @@
       "additional_realms" : "",
       "keytab_dir" : "/etc/security/keytabs",
       "principal_suffix" : "-${cluster_name|toLower()}",
-      "realm" : "TEST014.ORG"
+      "realm" : "ADTEST07.ORG"
     }
   }
 }

@@ -1,7 +1,7 @@
 {
   "Credential" : {
-    "principal" : "root/admin@TEST014.ORG",
-    "key" : "Clark@12345!",
+    "principal" : "root/admin@ADTEST07.ORG",
+    "key" : "P@ssw0rd7",
     "type" : "temporary"
   }
 }
