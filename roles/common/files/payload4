@@ -1,8 +1,8 @@
 {
   "session_attributes" : {
     "kerberos_admin" : {
-      "principal" : "admin@TEST014.ORG",
-      "password" : "Clark@12345!"
+      "principal" : "admin@ADTEST07.ORG",
+      "password" : "P@ssw0rd7"
     }
   },
   "Clusters": {
