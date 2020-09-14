@@ -7,7 +7,7 @@ service rngd start
 echo '[libdefaults]
   renew_lifetime = 7d
   forwardable = true
-  default_realm = TEST014.ORG
+  default_realm = ADTEST07.ORG
   ticket_lifetime = 24h
   dns_lookup_realm = false
   dns_lookup_kdc = false
@@ -16,7 +16,7 @@ echo '[libdefaults]
   #default_tkt_enctypes = aes des3-cbc-sha1 rc4 des-cbc-md5
 
 [domain_realm]
-  TEST014.org = TEST014.ORG
+  ADTEST07.org = ADTEST07.ORG
 
 [logging]
   default = FILE:/var/log/krb5kdc.log
@@ -24,16 +24,16 @@ echo '[libdefaults]
   kdc = FILE:/var/log/krb5kdc.log
 
 [realms]
-  TEST014.ORG = {
-    admin_server = dcsit.TEST014.org
-    kdc = dcsit.TEST014.org
+  ADTEST07.ORG = {
+    admin_server = dcsit.ADTEST07.org
+    kdc = dcsit.ADTEST07.org
   }
 '> /etc/krb5.conf
 
 # no need for this? or change the admin?
 kdb5_util create -P admin -s
 
-echo '*/admin@TEST014.ORG  *' > /var/kerberos/krb5kdc/kadm5.acl
+echo '*/admin@ADTEST07.ORG  *' > /var/kerberos/krb5kdc/kadm5.acl
 kadmin.local -q "addprinc -pw admin admin/admin"
 
 # add user keyadmin for Ranger KMS
