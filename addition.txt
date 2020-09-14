@@ -3,13 +3,13 @@ sudo yum -y install python-pip
 sudo pip install 'ansible==2.9.10' 
 
 ### make ansible no ssh password
-sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no db.test014.org
-sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode1.test014.org
-sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode2.test014.org
-sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode3.test014.org
+sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no db.adtest07.org
+sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode1.adtest07.org
+sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode2.adtest07.org
+sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode3.adtest07.org
 
 ### DC creation
-$passWord = 'Clark@12345!'
+$passWord = 'P@ssw0rd7'
 $userName = 'administrator'
 $pwdSecureString = ConvertTo-SecureString -Force -AsPlainText $passWord
 $credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $userName, $pwdSecureString
@@ -19,7 +19,7 @@ Install-WindowsFeature AD-Domain-Services -IncludeManagementTools -Verbose
 
 Import-Module ADDSDeployment
 
-Install-ADDSForest -SkipPreChecks -DomainName "test014.org" -InstallDns -SafeModeAdministratorPassword $pwdSecureString -Confirm -Force -Verbose -NoRebootOnCompletion
+Install-ADDSForest -SkipPreChecks -DomainName "adtest07.org" -InstallDns -SafeModeAdministratorPassword $pwdSecureString -Confirm -Force -Verbose -NoRebootOnCompletion
 
 Import-Module ActiveDirectory
 
@@ -27,24 +27,24 @@ Import-Module ActiveDirectory
 New-ADReplicationSubnet -Name "192.168.99.0/24" -Site Default-First-Site-Name
 
 # new user
-New-ADUser -Name "admin" -GivenName "hdp" -Surname "admin" -SamAccountName "admin" -UserPrincipalName "admin@test014.org" -Path "CN=Users,DC=test014,DC=org" -AccountPassword (ConvertTo-SecureString "Clark@12345!" -AsPlainText -force) -Enabled $true
+New-ADUser -Name "admin" -GivenName "hdp" -Surname "admin" -SamAccountName "admin" -UserPrincipalName "admin@adtest07.org" -Path "CN=Users,DC=adtest07,DC=org" -AccountPassword (ConvertTo-SecureString "P@ssw0rd7" -AsPlainText -force) -Enabled $true
 
 # new group
-New-ADGroup -Name "admins" -SamAccountName admins -GroupCategory Security -GroupScope Global -DisplayName "Admins" -Path "CN=Users,DC=test014,DC=Org" -Description "Admins for linux sudoers"
+New-ADGroup -Name "admins" -SamAccountName admins -GroupCategory Security -GroupScope Global -DisplayName "Admins" -Path "CN=Users,DC=adtest07,DC=Org" -Description "Admins for linux sudoers"
 
 # add admin to admins
 Add-ADGroupMember -Identity "Domain Admins" -Members admin 
 Add-ADGroupMember -Identity admins -Members admin
 
 # need OU for hadoop (hpdadmin can create object)
-New-ADOrganizationalUnit -Name "hadoopdev" -Path "DC=TEST014,DC=ORG" -ProtectedFromAccidentalDeletion $False
+New-ADOrganizationalUnit -Name "hadoopdev" -Path "DC=ADTEST07,DC=ORG" -ProtectedFromAccidentalDeletion $False
 
 #create revese lookup dns
 Add-DnsServerPrimaryZone -DynamicUpdate Secure -NetworkId '192.168.99.0/24' -ReplicationScope Domain
 
 # add dns entry
 
-Add-DnsServerResourceRecordA -Name "hdnode1" -ZoneName "test014.org" -AllowUpdateAny -IPv4Address "192.168.99.11" -TimeToLive 01:00:00 -CreatePtr -Verbose
-Add-DnsServerResourceRecordA -Name "hdnode2" -ZoneName "test014.org" -AllowUpdateAny -IPv4Address "192.168.99.12" -TimeToLive 01:00:00 -CreatePtr -Verbose
-Add-DnsServerResourceRecordA -Name "hdnode3" -ZoneName "test014.org" -AllowUpdateAny -IPv4Address "192.168.99.13" -TimeToLive 01:00:00 -CreatePtr -Verbose
-Add-DnsServerResourceRecordA -Name "db" -ZoneName "test014.org" -AllowUpdateAny -IPv4Address "192.168.99.14" -TimeToLive 01:00:00 -CreatePtr -Verbose
+Add-DnsServerResourceRecordA -Name "hdnode1" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.11" -TimeToLive 01:00:00 -CreatePtr -Verbose
+Add-DnsServerResourceRecordA -Name "hdnode2" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.12" -TimeToLive 01:00:00 -CreatePtr -Verbose
+Add-DnsServerResourceRecordA -Name "hdnode3" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.13" -TimeToLive 01:00:00 -CreatePtr -Verbose
+Add-DnsServerResourceRecordA -Name "db" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.14" -TimeToLive 01:00:00 -CreatePtr -Verbose
