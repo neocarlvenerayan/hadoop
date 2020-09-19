@@ -48,3 +48,20 @@ Add-DnsServerResourceRecordA -Name "hdnode1" -ZoneName "adtest07.org" -AllowUpda
 Add-DnsServerResourceRecordA -Name "hdnode2" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.12" -TimeToLive 01:00:00 -CreatePtr -Verbose
 Add-DnsServerResourceRecordA -Name "hdnode3" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.13" -TimeToLive 01:00:00 -CreatePtr -Verbose
 Add-DnsServerResourceRecordA -Name "db" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.14" -TimeToLive 01:00:00 -CreatePtr -Verbose
+
+#create IIS
+# download 7 binaries, put it on AD IIS root 
+https://donotdeletetfstate.blob.core.windows.net/binary/ambari-2.7.4.0-centos7.tar.gz
+https://donotdeletetfstate.blob.core.windows.net/binary/HDP-3.1.4.0-centos7-rpm.tar.gz
+https://donotdeletetfstate.blob.core.windows.net/binary/HDP-UTILS-1.1.0.22-centos7.tar.gz
+https://donotdeletetfstate.blob.core.windows.net/binary/endpoint-repo-1.7-1.x86_64.rpm
+https://donotdeletetfstate.blob.core.windows.net/binary/jce_policy-8.zip
+https://donotdeletetfstate.blob.core.windows.net/binary/jdk-8u112-linux-x64.tar.gz
+https://donotdeletetfstate.blob.core.windows.net/binary/pbis-open-9.1.0.551.linux.x86_64.rpm.sh
+https://donotdeletetfstate.blob.core.windows.net/binary/RPM-GPG-KEY-Jenkins
+
+# after reboot when already blueprinted
+ansible hdnode1.adtest07.org -i inv.ini -a "sudo chown ambari:root -R /var/run/ambari-server/ /run/ambari-server/" -b
+ap -i inv.ini ldap.yml -u 'vagrant' -e 'ansible_sudo_pass=vagrant default_password=P@ssw0rd7' -v
+
+#create AD certificate services using SHA1 
