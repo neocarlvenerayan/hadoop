@@ -1,0 +1,12 @@
+Import-Module ActiveDirectory
+New-ADReplicationSubnet -Name "192.168.99.0/24" -Site Default-First-Site-Name
+New-ADUser -Name "admin" -GivenName "hdp" -Surname "admin" -SamAccountName "admin" -UserPrincipalName "admin@adtest07.org" -Path "CN=Users,DC=adtest07,DC=org" -AccountPassword (ConvertTo-SecureString "P@ssw0rd7" -AsPlainText -force) -Enabled $true
+New-ADGroup -Name "admins" -SamAccountName admins -GroupCategory Security -GroupScope Global -DisplayName "Admins" -Path "CN=Users,DC=adtest07,DC=Org" -Description "Admins for linux sudoers"
+Add-ADGroupMember -Identity "Domain Admins" -Members admin 
+Add-ADGroupMember -Identity admins -Members admin
+New-ADOrganizationalUnit -Name "hadoopdev" -Path "DC=ADTEST07,DC=ORG" -ProtectedFromAccidentalDeletion $False
+Add-DnsServerPrimaryZone -DynamicUpdate Secure -NetworkId '192.168.99.0/24' -ReplicationScope Domain
+Add-DnsServerResourceRecordA -Name "hdnode1" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.11" -TimeToLive 01:00:00 -CreatePtr -Verbose
+Add-DnsServerResourceRecordA -Name "hdnode2" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.12" -TimeToLive 01:00:00 -CreatePtr -Verbose
+Add-DnsServerResourceRecordA -Name "hdnode3" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.13" -TimeToLive 01:00:00 -CreatePtr -Verbose
+Add-DnsServerResourceRecordA -Name "db" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.14" -TimeToLive 01:00:00 -CreatePtr -Verbose

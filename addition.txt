@@ -2,6 +2,10 @@
 sudo yum -y install python-pip
 sudo pip install 'ansible==2.9.10' 
 
+#winrm for ansible windows
+sudo yum -y install python-pip pip
+sudo pip install pywinrm
+
 ### vagrant plugin list
 vagrant-reload
 vagrant-vbguest

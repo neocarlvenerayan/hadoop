@@ -1,0 +1,16 @@
+- hosts: win
+  become_method: runas
+  gather_facts: false
+  roles:
+    - { role: ad, dcpromote: true }
+  tags:
+    - dcpromote
+
+- hosts: win
+  become_method: runas
+  gather_facts: false
+  roles:
+    - { role: ad, adconfig2: true }
+  tags:
+    - adconfig2
+    

@@ -1,0 +1,5 @@
+- include_tasks: dcpromote.yml
+  when: dcpromote|default(False)==True
+  
+- include_tasks: adconfig2.yml
+  when: adconfig2|default(False)==True     

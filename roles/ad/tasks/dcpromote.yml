@@ -1,0 +1,12 @@
+---
+
+- name: dc promote
+  win_shell: |
+       $passWord = 'P@ssw0rd7'
+       $userName = 'administrator'
+       $pwdSecureString = ConvertTo-SecureString -Force -AsPlainText $passWord
+       $credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $userName, $pwdSecureString
+       Install-WindowsFeature AD-Domain-Services -IncludeManagementTools -Verbose
+       Import-Module ADDSDeployment
+       Install-ADDSForest -SkipPreChecks -DomainName "adtest07.org" -InstallDns -SafeModeAdministratorPassword $pwdSecureString -Confirm -Force -Verbose 
+  ignore_errors: true
