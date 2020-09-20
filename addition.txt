@@ -16,63 +16,27 @@ sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode1.adtest07.org
 sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode2.adtest07.org
 sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode3.adtest07.org
 
-### active directory creation
-$passWord = 'P@ssw0rd7'
-$userName = 'administrator'
-$pwdSecureString = ConvertTo-SecureString -Force -AsPlainText $passWord
-$credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $userName, $pwdSecureString
 
-# add domain services 
-Install-WindowsFeature AD-Domain-Services -IncludeManagementTools -Verbose
 
-Import-Module ADDSDeployment
-
-Install-ADDSForest -SkipPreChecks -DomainName "adtest07.org" -InstallDns -SafeModeAdministratorPassword $pwdSecureString -Confirm -Force -Verbose 
-#-NoRebootOnCompletion
-
-# wait to reboot then continue below
-
-Import-Module ActiveDirectory
-
-#create subnet
-New-ADReplicationSubnet -Name "192.168.99.0/24" -Site Default-First-Site-Name
-
-# new user
-New-ADUser -Name "admin" -GivenName "hdp" -Surname "admin" -SamAccountName "admin" -UserPrincipalName "admin@adtest07.org" -Path "CN=Users,DC=adtest07,DC=org" -AccountPassword (ConvertTo-SecureString "P@ssw0rd7" -AsPlainText -force) -Enabled $true
-
-# new group
-New-ADGroup -Name "admins" -SamAccountName admins -GroupCategory Security -GroupScope Global -DisplayName "Admins" -Path "CN=Users,DC=adtest07,DC=Org" -Description "Admins for linux sudoers"
-
-# add admin to admins
-Add-ADGroupMember -Identity "Domain Admins" -Members admin 
-Add-ADGroupMember -Identity admins -Members admin
-
-# need OU for hadoop (hpdadmin can create object)
-New-ADOrganizationalUnit -Name "hadoopdev" -Path "DC=ADTEST07,DC=ORG" -ProtectedFromAccidentalDeletion $False
-
-#create revese lookup dns
-Add-DnsServerPrimaryZone -DynamicUpdate Secure -NetworkId '192.168.99.0/24' -ReplicationScope Domain
-
-# add dns entry
-
-Add-DnsServerResourceRecordA -Name "hdnode1" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.11" -TimeToLive 01:00:00 -CreatePtr -Verbose
-Add-DnsServerResourceRecordA -Name "hdnode2" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.12" -TimeToLive 01:00:00 -CreatePtr -Verbose
-Add-DnsServerResourceRecordA -Name "hdnode3" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.13" -TimeToLive 01:00:00 -CreatePtr -Verbose
-Add-DnsServerResourceRecordA -Name "db" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.14" -TimeToLive 01:00:00 -CreatePtr -Verbose
-
-#create IIS
-# download 7 binaries, put it on AD IIS root 
+# download binaries, put it on AD IIS root 
+# for ambari
 https://donotdeletetfstate.blob.core.windows.net/binary/ambari-2.7.4.0-centos7.tar.gz
 https://donotdeletetfstate.blob.core.windows.net/binary/HDP-3.1.4.0-centos7-rpm.tar.gz
 https://donotdeletetfstate.blob.core.windows.net/binary/HDP-UTILS-1.1.0.22-centos7.tar.gz
-https://donotdeletetfstate.blob.core.windows.net/binary/endpoint-repo-1.7-1.x86_64.rpm
+https://donotdeletetfstate.blob.core.windows.net/binary/RPM-GPG-KEY-Jenkins  
+# for AD policy on kerberos
 https://donotdeletetfstate.blob.core.windows.net/binary/jce_policy-8.zip
+# for postgres db on master
 https://donotdeletetfstate.blob.core.windows.net/binary/jdk-8u112-linux-x64.tar.gz
+# for ldap authentication with AD
 https://donotdeletetfstate.blob.core.windows.net/binary/pbis-open-9.1.0.551.linux.x86_64.rpm.sh
-https://donotdeletetfstate.blob.core.windows.net/binary/RPM-GPG-KEY-Jenkins
+
 
 # after reboot when already blueprinted
 ansible hdnode1.adtest07.org -i inv.ini -a "sudo chown ambari:root -R /var/run/ambari-server/ /run/ambari-server/" -b
+
+# cli for ansible
 ap -i inv.ini ldap.yml -u 'vagrant' -e 'ansible_sudo_pass=vagrant default_password=P@ssw0rd7' -v
+ap -i win.ini ad.yml -v -t dcpromote
 
 #create AD certificate services using SHA1 
