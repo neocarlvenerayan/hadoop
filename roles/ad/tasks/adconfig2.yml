@@ -19,6 +19,10 @@
   win_shell: |
        Install-WindowsFeature -Name Web-Server -IncludeAllSubFeature -ComputerName dc1
 
-- name: add IIS 
+- name: add certificate authority 
   win_shell: |
-       Install-AdcsCertificationAuthority -CAType EnterpriseRootCa -CryptoProviderName "ECDSA_P256#Microsoft Software Key Storage Provider" -KeyLength 256 -HashAlgorithmName SHA1
+       Install-WindowsFeature AD-Certificate
+       Install-WindowsFeature RSAT-ADCS-Mgmt
+       Install-AdcsCertificationAuthority -CACommonName "ADTEST07 Root CA" -CAType EnterpriseRootCa -HashAlgorithmName SHA1 -KeyLength 2048 -ValidityPeriod Years -ValidityPeriodUnits 100 -Confirm:$false
+       Install-WindowsFeature ADCS-Web-Enrollment
+       Install-AdcsWebEnrollment -Confirm:$false
