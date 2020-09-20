@@ -1,6 +1,6 @@
 ---
 
-- name: AD config2
+- name: AD continue
   win_shell: |
        Import-Module ActiveDirectory
        New-ADReplicationSubnet -Name "192.168.99.0/24" -Site Default-First-Site-Name
@@ -9,6 +9,9 @@
        Add-ADGroupMember -Identity "Domain Admins" -Members admin 
        Add-ADGroupMember -Identity admins -Members admin
        New-ADOrganizationalUnit -Name "hadoopdev" -Path "DC=ADTEST07,DC=ORG" -ProtectedFromAccidentalDeletion $False
+
+- name: Create reverse zone
+  win_shell: |
        Add-DnsServerPrimaryZone -DynamicUpdate Secure -NetworkId '192.168.99.0/24' -ReplicationScope Domain
        Add-DnsServerResourceRecordA -Name "hdnode1" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.11" -TimeToLive 01:00:00 -CreatePtr -Verbose
        Add-DnsServerResourceRecordA -Name "hdnode2" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.12" -TimeToLive 01:00:00 -CreatePtr -Verbose
