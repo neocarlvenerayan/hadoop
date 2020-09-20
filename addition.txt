@@ -1,6 +1,10 @@
-### ansible particular
+### ansible particular version
 sudo yum -y install python-pip
 sudo pip install 'ansible==2.9.10' 
+
+### vagrant plugin list
+vagrant-reload
+vagrant-vbguest
 
 ### make ansible no ssh password
 sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no db.adtest07.org
@@ -8,7 +12,7 @@ sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode1.adtest07.org
 sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode2.adtest07.org
 sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode3.adtest07.org
 
-### DC creation
+### active directory creation
 $passWord = 'P@ssw0rd7'
 $userName = 'administrator'
 $pwdSecureString = ConvertTo-SecureString -Force -AsPlainText $passWord
@@ -19,7 +23,10 @@ Install-WindowsFeature AD-Domain-Services -IncludeManagementTools -Verbose
 
 Import-Module ADDSDeployment
 
-Install-ADDSForest -SkipPreChecks -DomainName "adtest07.org" -InstallDns -SafeModeAdministratorPassword $pwdSecureString -Confirm -Force -Verbose -NoRebootOnCompletion
+Install-ADDSForest -SkipPreChecks -DomainName "adtest07.org" -InstallDns -SafeModeAdministratorPassword $pwdSecureString -Confirm -Force -Verbose 
+#-NoRebootOnCompletion
+
+# wait to reboot then continue below
 
 Import-Module ActiveDirectory
 
