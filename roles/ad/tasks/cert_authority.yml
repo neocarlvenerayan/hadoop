@@ -10,4 +10,27 @@
 
 - name: enable network discovery
   win_shell: |
-        netsh advfirewall firewall set rule group='network discovery' new enable=yes
+       netsh advfirewall firewall set rule group="network discovery" new enable=yes
+
+- name: enable fileshare and printer
+  win_shell: |
+       netsh advfirewall firewall set rule group="File and Printer Sharing" new enable=Yes
+
+- name: wait for this --do not continue
+  pause: minutes=2
+
+- name: list hadoop
+  win_shell: |
+       dir \\vboxsvr\hadoop
+
+- name: xcopy binary
+  win_command: xcopy c:\hadoop\{{item}} C:\inetpub\wwwroot\
+  with_items: 
+      - jce_policy-8.zip
+      - endpoint-repo-1.7-1.x86_64.rpm
+      - jdk-8u112-linux-x64.tar.gz
+      - pbis-open-9.1.0.551.linux.x86_64.rpm.sh
+      - RPM-GPG-KEY-Jenkins
+      - ambari-2.7.4.0-centos7.tar.gz
+      - HDP-3.1.4.0-centos7-rpm.tar.gz
+      - HDP-UTILS-1.1.0.22-centos7.tar.gz

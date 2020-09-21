@@ -1,5 +1,13 @@
 ---
 
+- name: disable sleep mode
+  win_command: "{{item}}"
+  with_items: 
+        - powercfg.exe -x -monitor-timeout-ac 0
+        - powercfg.exe -x -disk-timeout-ac 0
+        - powercfg.exe -x -standby-timeout-ac 0
+        - powercfg.exe -x -hibernate-timeout-ac 0
+
 - name: dc promote
   win_shell: |
        $passWord = 'P@ssw0rd7'
@@ -10,3 +18,7 @@
        Import-Module ADDSDeployment
        Install-ADDSForest -SkipPreChecks -DomainName "adtest07.org" -InstallDns -SafeModeAdministratorPassword $pwdSecureString -Confirm -Force -Verbose 
   ignore_errors: true
+
+- name: wait for this --do not continue
+  pause: minutes=7
+  delegate_to: localhost

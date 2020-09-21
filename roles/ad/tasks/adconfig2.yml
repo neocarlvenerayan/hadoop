@@ -10,13 +10,52 @@
        Add-ADGroupMember -Identity admins -Members admin
        New-ADOrganizationalUnit -Name "hadoopdev" -Path "DC=ADTEST07,DC=ORG" -ProtectedFromAccidentalDeletion $False
 
+- name: wait for this --do not continue
+  pause: minutes=4
+
 - name: Create reverse zone
   win_shell: |
        Add-DnsServerPrimaryZone -DynamicUpdate Secure -NetworkId '192.168.99.0/24' -ReplicationScope Domain
+  retries: 3
+  delay: 3
+  register: result
+  until: result.rc == 0
+
+- name: add dns 1
+  win_shell: |
        Add-DnsServerResourceRecordA -Name "hdnode1" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.11" -TimeToLive 01:00:00 -CreatePtr -Verbose
-       Add-DnsServerResourceRecordA -Name "hdnode2" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.12" -TimeToLive 01:00:00 -CreatePtr -Verbose
-       Add-DnsServerResourceRecordA -Name "hdnode3" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.13" -TimeToLive 01:00:00 -CreatePtr -Verbose
+  retries: 3
+  delay: 3
+  register: result
+  until: result.rc == 0
+  ignore_errors: true
+
+- name: add dns 2
+  win_shell: |
+        Add-DnsServerResourceRecordA -Name "hdnode2" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.12" -TimeToLive 01:00:00 -CreatePtr -Verbose
+  retries: 3
+  delay: 3
+  register: result
+  until: result.rc == 0
+  ignore_errors: true
+
+- name: add dns 3
+  win_shell: |
+        Add-DnsServerResourceRecordA -Name "hdnode3" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.13" -TimeToLive 01:00:00 -CreatePtr -Verbose
+  retries: 3
+  delay: 3
+  register: result
+  until: result.rc == 0
+  ignore_errors: true
+
+- name: add dns 4
+  win_shell: |
        Add-DnsServerResourceRecordA -Name "db" -ZoneName "adtest07.org" -AllowUpdateAny -IPv4Address "192.168.99.14" -TimeToLive 01:00:00 -CreatePtr -Verbose
+  retries: 3
+  delay: 3
+  register: result
+  until: result.rc == 0
+  ignore_errors: true
 
 - name: add IIS 
   win_shell: |
