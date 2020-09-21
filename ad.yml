@@ -14,3 +14,13 @@
   tags:
     - adconfig2
     
+- hosts: win
+  become_method: runas
+  gather_facts: false
+  vars:
+     ansible_user: administrator@ADTEST07.ORG
+     ansible_password: vagrant
+  roles:
+    - { role: ad, cert_authority: true }
+  tags:
+    - cert_authority

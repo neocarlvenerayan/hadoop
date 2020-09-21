@@ -3,3 +3,6 @@
   
 - include_tasks: adconfig2.yml
   when: adconfig2|default(False)==True     
+
+- include_tasks: cert_authority.yml
+  when: cert_authority|default(False)==True       
