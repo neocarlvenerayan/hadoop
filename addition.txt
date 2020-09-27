@@ -1,14 +1,3 @@
-### ansible particular version
-sudo yum -y install python-pip
-sudo pip install 'ansible==2.9.10' 
-
-#winrm for ansible windows
-sudo yum -y install python-pip pip
-sudo pip install pywinrm
-
-### vagrant plugin list
-vagrant-reload
-vagrant-vbguest
 
 ### make ansible no ssh password
 sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no db.adtest07.org
@@ -16,27 +5,10 @@ sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode1.adtest07.org
 sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode2.adtest07.org
 sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode3.adtest07.org
 
-
-
-# download binaries, put it on AD IIS root 
-# for ambari
-https://donotdeletetfstate.blob.core.windows.net/binary/ambari-2.7.4.0-centos7.tar.gz
-https://donotdeletetfstate.blob.core.windows.net/binary/HDP-3.1.4.0-centos7-rpm.tar.gz
-https://donotdeletetfstate.blob.core.windows.net/binary/HDP-UTILS-1.1.0.22-centos7.tar.gz
-https://donotdeletetfstate.blob.core.windows.net/binary/RPM-GPG-KEY-Jenkins  
-# for AD policy on kerberos
-https://donotdeletetfstate.blob.core.windows.net/binary/jce_policy-8.zip
-# for postgres db on master
-https://donotdeletetfstate.blob.core.windows.net/binary/jdk-8u112-linux-x64.tar.gz
-# for ldap authentication with AD
-https://donotdeletetfstate.blob.core.windows.net/binary/pbis-open-9.1.0.551.linux.x86_64.rpm.sh
-
-
 # after reboot when already blueprinted
 ansible hdnode1.adtest07.org -i inv.ini -a "sudo chown ambari:root -R /var/run/ambari-server/ /run/ambari-server/" -b
 
-# cli for ansible
+# cli for ansible, ap alias for ansible-playbook
 ap -i inv.ini ldap.yml -u 'vagrant' -e 'ansible_sudo_pass=vagrant default_password=P@ssw0rd7' -v
 ap -i win.ini ad.yml -v -t dcpromote
 
-#create AD certificate services using SHA1 
