@@ -12,3 +12,12 @@ ansible hdnode1.adtest07.org -i inv.ini -a "sudo chown ambari:root -R /var/run/a
 ap -i inv.ini ldap.yml -u 'vagrant' -e 'ansible_sudo_pass=vagrant default_password=P@ssw0rd7' -v
 ap -i win.ini ad.yml -v -t dcpromote
 
+### error saving git error
+To https://github.com/neocarlvenerayan/hadoop.git
+ ! [remote rejected] master -> master (permission denied)
+error: failed to push some refs to 'https://github.com/neocarlvenerayan/hadoop.git'
+[vagrant@ansible hadoop]$ git config --global --edit
+[credential]
+  helper = osxkeychain
+  useHttpPath = true
+# save it 
