@@ -1,5 +1,26 @@
-# make ansible no ssh password
-sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no db.test014.org
-sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode1.test014.org
-sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode2.test014.org
-sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode3.test014.org
+
+### make ansible no ssh password
+sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no db.adtest07.org
+sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode1.adtest07.org
+sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode2.adtest07.org
+sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode3.adtest07.org
+
+# after reboot when already blueprinted
+ansible hdnode1.adtest07.org -i inv.ini -a "sudo chown ambari:root -R /var/run/ambari-server/ /run/ambari-server/" -b
+
+# cli for ansible, ap alias for ansible-playbook
+ap -i inv.ini yum.yml -u 'vagrant' -e 'ansible_sudo_pass=vagrant default_password=P@ssw0rd7' -v
+ap -i win.ini ad.yml -v -t dcpromote
+
+### error saving git error (and do not use vscode terminal)
+To https://github.com/neocarlvenerayan/hadoop.git
+ ! [remote rejected] master -> master (permission denied)
+error: failed to push some refs to 'https://github.com/neocarlvenerayan/hadoop.git'
+### solution is to use putty or mputty
+[vagrant@ansible hadoop]$ git config --global --edit
+[credential]
+  helper = osxkeychain
+  useHttpPath = true
+# save it 
+# and do another git push
+
