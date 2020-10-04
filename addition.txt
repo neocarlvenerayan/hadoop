@@ -9,7 +9,7 @@ sshpass -p vagrant ssh-copy-id -o StrictHostKeyChecking=no hdnode3.adtest07.org
 ansible hdnode1.adtest07.org -i inv.ini -a "sudo chown ambari:root -R /var/run/ambari-server/ /run/ambari-server/" -b
 
 # cli for ansible, ap alias for ansible-playbook
-ap -i inv.ini ldap.yml -u 'vagrant' -e 'ansible_sudo_pass=vagrant default_password=P@ssw0rd7' -v
+ap -i inv.ini yum.yml -u 'vagrant' -e 'ansible_sudo_pass=vagrant default_password=vagrant' -v
 ap -i win.ini ad.yml -v -t dcpromote
 
 ### error saving git error (and do not use vscode terminal)
@@ -23,3 +23,4 @@ error: failed to push some refs to 'https://github.com/neocarlvenerayan/hadoop.g
   useHttpPath = true
 # save it 
 # and do another git push
+
