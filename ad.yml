@@ -24,3 +24,11 @@
     - { role: ad, cert_authority: true }
   tags:
     - cert_authority
+
+- hosts: win
+  become_method: runas
+  gather_facts: false
+  roles:
+    - { role: ad, changepassword: true, passadmin: P@ssw0rd7 }
+  tags:
+    - changepassword
